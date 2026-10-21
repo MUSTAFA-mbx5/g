@@ -2,533 +2,673 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>دردشة حية بالأرقام</title>
-  <!-- مكتبة الاتصال المباشر بين الأجهزة -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>تطبيق المحادثة</title>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <style>
     :root {
       --bg-main: #0b1120;
-      --bg-panel: #111c31;
+      --bg-card: #111c31;
       --bg-hover: #1e293b;
       --primary: #6366f1;
       --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-      --text-main: #f8fafc;
+      --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #1e293b;
+      --online: #10b981;
+      --offline: #64748b;
       --danger: #ef4444;
-      --recording: #dc2626;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
 
     body {
-      background: var(--bg-main);
-      color: var(--text-main);
-      height: 100vh;
+      background: #020617;
+      color: var(--text);
+      height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
     }
 
-    .app-container {
+    /* هيكل تطبيق الهاتف */
+    .mobile-app {
       width: 100%;
-      max-width: 950px;
-      height: 95vh;
-      background: var(--bg-panel);
-      border-radius: 20px;
-      display: flex;
-      overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-      border: 1px solid var(--border);
-    }
-
-    /* الشريط الجانبي */
-    .sidebar {
-      width: 320px;
-      background: #0d1626;
-      border-left: 1px solid var(--border);
+      max-width: 480px;
+      height: 100dvh;
+      background: var(--bg-main);
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
     }
 
-    .my-profile-box {
-      padding: 16px;
-      background: var(--primary-gradient);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar-img {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #000;
-      border: 2px solid rgba(255,255,255,0.4);
-    }
-
-    .profile-details { flex: 1; overflow: hidden; }
-    .profile-details .name { font-weight: bold; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .profile-details .id-badge {
-      display: inline-block;
-      background: rgba(0,0,0,0.3);
-      padding: 2px 8px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      margin-top: 3px;
-      cursor: pointer;
-    }
-
-    .sidebar-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .contacts-list {
-      flex: 1;
-      overflow-y: auto;
-      list-style: none;
-    }
-
-    .contact-item {
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      transition: background 0.2s;
-    }
-    .contact-item:hover, .contact-item.active { background: var(--bg-hover); }
-
-    /* منطقة الشات الرئيسية */
-    .main-chat {
-      flex: 1;
+    /* الشاشات بنظام التنقل */
+    .screen {
+      position: absolute;
+      inset: 0;
       display: flex;
       flex-direction: column;
       background: var(--bg-main);
+      transition: transform 0.25s ease-in-out;
+      z-index: 10;
     }
 
-    .chat-header {
-      padding: 14px 18px;
-      background: var(--bg-panel);
+    .screen.hidden-left { transform: translateX(100%); pointer-events: none; }
+    .screen.hidden-right { transform: translateX(-100%); pointer-events: none; }
+
+    /* الهيدر العلوي */
+    .app-header {
+      padding: 14px 16px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #334155;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .avatar-sm { width: 36px; height: 36px; }
+
+    .id-tag {
+      font-size: 0.72rem;
+      background: rgba(0,0,0,0.25);
+      padding: 2px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    /* قائمة المحادثات */
+    .chat-list-container {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+    }
+    .chat-item:active { background: var(--bg-hover); }
+
+    .chat-item-info { flex: 1; overflow: hidden; }
+    .chat-item-name { font-weight: 600; font-size: 0.95rem; }
+    .chat-item-sub { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 6px; }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      align-self: center;
+    }
+    .status-dot.online { background: var(--online); }
+    .status-dot.offline { background: var(--offline); }
+
+    /* شاشة الدردشة الفردية */
+    .chat-screen-header {
+      padding: 10px 14px;
+      background: var(--bg-card);
       border-bottom: 1px solid var(--border);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
 
-    .chat-status {
-      padding: 6px 12px;
-      font-size: 0.75rem;
-      text-align: center;
-      background: #1e293b;
-      color: #94a3b8;
+    .back-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 4px 8px;
     }
-    .chat-status.connected { background: #064e3b; color: #6ee7b7; }
-    .chat-status.error { background: #4c0519; color: #fda4af; }
 
-    .messages-area {
+    .chat-person-details { flex: 1; overflow: hidden; }
+    .chat-person-name { font-weight: bold; font-size: 0.95rem; }
+    .chat-person-status { font-size: 0.72rem; color: var(--text-muted); }
+
+    .chat-messages {
       flex: 1;
-      padding: 16px;
       overflow-y: auto;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
-    /* فقاعات الرسائل */
-    .msg-row {
-      display: flex;
-      max-width: 75%;
-      position: relative;
-    }
-    .msg-row.me { align-self: flex-start; }
-    .msg-row.them { align-self: flex-end; }
-
-    .bubble {
-      padding: 10px 14px;
+    /* رسائل المحادثة */
+    .msg-box {
+      max-width: 78%;
+      padding: 8px 12px;
       border-radius: 14px;
       position: relative;
       word-wrap: break-word;
-      width: 100%;
+      font-size: 0.92rem;
     }
-    .msg-row.me .bubble {
+    .msg-box.me {
+      align-self: flex-start;
       background: var(--primary-gradient);
-      color: #fff;
+      color: white;
       border-bottom-right-radius: 2px;
     }
-    .msg-row.them .bubble {
+    .msg-box.them {
+      align-self: flex-end;
       background: #1e293b;
       color: #e2e8f0;
       border-bottom-left-radius: 2px;
     }
 
-    .bubble-header {
+    .msg-top-action {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       gap: 8px;
     }
 
-    .msg-options-btn {
+    .msg-actions-btn {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.6);
       cursor: pointer;
-      font-size: 1.1rem;
-      line-height: 1;
+      font-size: 1rem;
     }
 
-    .msg-menu {
+    .msg-context-menu {
       position: absolute;
-      top: 30px;
+      top: 25px;
       left: 0;
-      background: var(--bg-panel);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-      z-index: 10;
+      border-radius: 6px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      z-index: 20;
       display: none;
       flex-direction: column;
-      min-width: 140px;
+      min-width: 130px;
     }
-    .msg-menu.open { display: flex; }
-    .msg-menu button {
+    .msg-context-menu.show { display: flex; }
+    .msg-context-menu button {
       background: none;
       border: none;
-      color: var(--text-main);
+      color: var(--text);
       padding: 8px 12px;
       text-align: right;
+      font-size: 0.8rem;
       cursor: pointer;
-      font-size: 0.85rem;
     }
-    .msg-menu button:hover { background: var(--bg-hover); }
-    .msg-menu button.danger { color: var(--danger); }
+    .msg-context-menu button:hover { background: var(--bg-hover); }
 
-    .media-element {
-      max-width: 100%;
-      max-height: 240px;
-      border-radius: 8px;
-      display: block;
-      margin-top: 6px;
-    }
-
-    audio { width: 220px; height: 35px; margin-top: 5px; }
-
-    .meta-info {
-      font-size: 0.68rem;
+    .msg-meta {
+      font-size: 0.65rem;
       opacity: 0.7;
-      margin-top: 4px;
+      margin-top: 3px;
       display: flex;
       gap: 6px;
     }
 
-    /* Composer */
-    .composer {
-      padding: 12px 16px;
-      background: var(--bg-panel);
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 8px;
-      align-items: center;
+    .msg-media {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin-top: 5px;
     }
 
-    .composer input[type="text"] {
+    audio { width: 200px; height: 35px; margin-top: 5px; }
+
+    /* حقل الكتابة السفلي */
+    .chat-bottom-bar {
+      padding: 10px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-bottom-bar input[type="text"] {
       flex: 1;
-      padding: 11px 16px;
+      padding: 10px 14px;
       border-radius: 20px;
       border: 1px solid var(--border);
       background: var(--bg-main);
       color: white;
       outline: none;
+      font-size: 0.9rem;
     }
 
-    .btn-circle {
-      width: 42px;
-      height: 42px;
+    .round-btn {
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: var(--bg-main);
       color: white;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      transition: 0.2s;
+      cursor: pointer;
+      font-size: 1rem;
     }
-    .btn-circle:hover { background: var(--bg-hover); }
-    .btn-circle.send { background: var(--primary-gradient); border: none; }
-    .btn-circle.recording { background: var(--recording); animation: pulse 1s infinite alternate; }
+    .round-btn.send { background: var(--primary-gradient); border: none; }
+    .round-btn.recording { background: #dc2626; animation: pulse 1s infinite alternate; }
 
     @keyframes pulse {
       0% { transform: scale(1); }
-      100% { transform: scale(1.1); }
+      100% { transform: scale(1.15); }
     }
 
-    .btn {
-      background: var(--primary);
+    /* شاشة التسجيل لأول مرة (Onboarding) */
+    .onboarding-screen {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-main);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px;
+      gap: 16px;
+    }
+
+    .onboarding-screen h2 {
+      text-align: center;
+      margin-bottom: 6px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.8rem; color: var(--text-muted); }
+    .form-input {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
       color: white;
-      border: none;
-      padding: 7px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      outline: none;
     }
-    .btn-danger { background: var(--danger); }
 
-    /* Modals */
+    .gender-selector {
+      display: flex;
+      gap: 12px;
+    }
+    .gender-option {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .gender-option.active {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.15);
+    }
+
+    .btn-submit {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary-gradient);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+
+    /* النوافذ المنبثقة */
     .modal-overlay {
-      position: fixed;
+      position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.7);
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      z-index: 50;
+      padding: 20px;
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
-      background: var(--bg-panel);
-      padding: 22px;
-      border-radius: 12px;
-      width: 320px;
+      width: 100%;
+      background: var(--bg-card);
       border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-    }
-    .modal-box input {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-main);
-      color: white;
-      outline: none;
     }
   </style>
 </head>
 <body>
 
-<div class="app-container">
-  <!-- الشريط الجانبي -->
-  <aside class="sidebar">
-    <div class="my-profile-box">
-      <img id="my-avatar" class="avatar-img" src="" alt="avatar">
-      <div class="profile-details">
-        <div class="name"><span id="my-name">مستخدم</span> (<span id="my-age">24</span>)</div>
-        <div class="id-badge" onclick="copyId()" title="انقر لنسخ رقمك">
-          رقمك: <span id="my-id-display">•••••••</span> 📋
-        </div>
+<div class="mobile-app">
+
+  <!-- 1. شاشة البداية / التسجيل لأول مرة -->
+  <div class="onboarding-screen" id="onboardingScreen" style="display: none;">
+    <h2>مرحباً بك في المحادثة 👋</h2>
+    <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);margin-bottom:10px;">يرجى ملء بياناتك للبدء</p>
+
+    <div class="form-group">
+      <label>الاسم:</label>
+      <input type="text" id="ob-name" class="form-input" placeholder="اسمك المستعار">
+    </div>
+
+    <div class="form-group">
+      <label>العمر:</label>
+      <input type="number" id="ob-age" class="form-input" placeholder="عمرك">
+    </div>
+
+    <div class="form-group">
+      <label>الجنس:</label>
+      <div class="gender-selector">
+        <div class="gender-option active" id="gender-male" onclick="setGender('male')">👦 ذكر</div>
+        <div class="gender-option" id="gender-female" onclick="setGender('female')">👧 أنثى</div>
       </div>
-      <button class="btn-circle" style="width:34px;height:34px;font-size:0.9rem;" onclick="openProfileModal()">⚙️</button>
     </div>
 
-    <div class="sidebar-actions">
-      <span style="font-weight: bold; font-size: 0.85rem;">جهات الاتصال</span>
-      <button class="btn" onclick="openAddModal()">➕ شخص جديد</button>
-    </div>
+    <button class="btn-submit" onclick="finishOnboarding()">دخول وبدء المحادثة</button>
+  </div>
 
-    <ul class="contacts-list" id="contacts-list"></ul>
-  </aside>
-
-  <!-- نافذة المحادثة -->
-  <main class="main-chat">
-    <div class="chat-header">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <img id="current-chat-avatar" class="avatar-img" style="width:38px;height:38px;display:none;">
+  <!-- 2. الشاشة الرئيسية: قائمة المحادثات -->
+  <div class="screen" id="homeScreen">
+    <header class="app-header">
+      <div class="user-profile-badge">
+        <img id="my-avatar" class="avatar" src="" alt="avatar">
         <div>
-          <div id="current-chat-name" style="font-weight:bold;">اختر محادثة</div>
-          <div id="current-chat-id" style="font-size:0.75rem; color:var(--text-muted);"></div>
+          <div style="font-weight: bold; font-size: 0.95rem;"><span id="my-name">--</span> (<span id="my-age">--</span>)</div>
+          <div class="id-tag" onclick="copyMyId()" title="نسخ رقم الشات">رقمك: <span id="my-id-display">•••••••</span> 📋</div>
         </div>
       </div>
-      <div id="top-chat-actions" style="display:none;">
-        <button class="btn btn-danger" onclick="deleteEntireChat()">🗑️ حذف الدردشة للطرفين</button>
+      <button class="round-btn" onclick="openAddModal()" title="إضافة شخص">➕</button>
+    </header>
+
+    <div class="chat-list-container" id="chatList">
+      <!-- جهات الاتصال -->
+    </div>
+  </div>
+
+  <!-- 3. شاشة المحادثة الفردية الخاصة -->
+  <div class="screen hidden-left" id="chatScreen">
+    <div class="chat-screen-header">
+      <button class="back-btn" onclick="goBackToHome()">⬅️</button>
+      <img id="chat-person-avatar" class="avatar avatar-sm" src="" alt="avatar">
+      <div class="chat-person-details">
+        <div class="chat-person-name" id="chat-person-name">--</div>
+        <div class="chat-person-status" id="chat-person-status">
+          <span class="status-dot offline" id="chat-status-dot"></span>
+          <span id="chat-status-text">غير متصل</span>
+        </div>
+      </div>
+      <button class="round-btn" style="border:none;background:transparent;color:var(--danger);" onclick="deleteEntireChat()" title="حذف الدردشة للطرفين">🗑️</button>
+    </div>
+
+    <div class="chat-messages" id="messagesArea">
+      <!-- فقاعات الرسائل -->
+    </div>
+
+    <!-- صندوق الإرسال -->
+    <div class="chat-bottom-bar">
+      <label class="round-btn" title="إرفاق صورة أو فيديو">
+        📎
+        <input type="file" id="media-input" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelect(event)">
+      </label>
+      <button class="round-btn" id="voice-record-btn" onclick="toggleVoiceRecording()" title="تسجيل صوتي">🎤</button>
+      <input type="text" id="message-text-input" placeholder="اكتب رسالة..." onkeypress="if(event.key === 'Enter') sendTextMessage()">
+      <button class="round-btn send" onclick="sendTextMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة شخص -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-box">
+      <h3 style="font-size:1rem;">إضافة محادثة جديدة</h3>
+      <input type="text" id="add-friend-name" class="form-input" placeholder="اسم الشخص">
+      <input type="number" id="add-friend-id" class="form-input" placeholder="رقم الشات الخاص به">
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="round-btn" style="width:auto;padding:8px 16px;border-radius:8px;" onclick="closeModals()">إلغاء</button>
+        <button class="btn-submit" style="margin:0;padding:8px 16px;" onclick="addFriendAndOpen()">إضافة</button>
       </div>
     </div>
-
-    <div class="chat-status" id="chat-status">جاهز</div>
-
-    <div class="messages-area" id="messages-area"></div>
-
-    <div class="composer">
-      <label class="btn-circle" title="إرفاق صورة أو فيديو">
-        📎
-        <input type="file" id="media-file-input" accept="image/*,video/*" style="display:none;" onchange="sendMediaFile(event)">
-      </label>
-      <button class="btn-circle" id="voice-btn" onclick="toggleVoiceRecording()" title="تسجيل صوتي">🎤</button>
-      <input type="text" id="chat-input" placeholder="اكتب رسالة..." onkeypress="if(event.key === 'Enter') sendText()">
-      <button class="btn-circle send" onclick="sendText()">➤</button>
-    </div>
-  </main>
-</div>
-
-<!-- Modal: الإعدادات -->
-<div class="modal-overlay" id="profile-modal">
-  <div class="modal-box">
-    <h3>تعديل الملف الشخصي</h3>
-    <label style="font-size:0.8rem;color:var(--text-muted);">صورتك الشخصية:</label>
-    <input type="file" id="avatar-input" accept="image/*">
-    <input type="text" id="name-input" placeholder="الاسم">
-    <input type="number" id="age-input" placeholder="العمر">
-    <div style="display:flex; justify-content:flex-end; gap:8px;">
-      <button class="btn" style="background:var(--bg-hover);" onclick="closeModals()">إلغاء</button>
-      <button class="btn" onclick="saveProfile()">حفظ</button>
-    </div>
   </div>
-</div>
 
-<!-- Modal: إضافة جهة اتصال -->
-<div class="modal-overlay" id="add-modal">
-  <div class="modal-box">
-    <h3>إضافة شخص بالمحادثة</h3>
-    <input type="text" id="friend-name-input" placeholder="اسم الشخص">
-    <input type="text" id="friend-id-input" placeholder="رقم الشات المكون من 7 أرقام">
-    <div style="display:flex; justify-content:flex-end; gap:8px;">
-      <button class="btn" style="background:var(--bg-hover);" onclick="closeModals()">إلغاء</button>
-      <button class="btn" onclick="addContact()">إضافة والاتصال</button>
-    </div>
-  </div>
 </div>
 
 <script>
-  const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=6366f1&color=fff&name=U';
+  // الصور الافتراضية للذكر والأنثى
+  const BOY_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=b6e3f4';
+  const GIRL_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=ffd5dc';
 
-  // 1. توليد أو استرجاع رقم شات ثابت للجهاز
+  // 1. إدارة الهوية الثابتة
   function getMyFixedId() {
-    let id = localStorage.getItem('chat_fixed_id');
+    let id = localStorage.getItem('chat_fixed_device_id');
     if (!id || !/^\d{7}$/.test(id)) {
       id = String(Math.floor(1000000 + Math.random() * 9000000));
-      localStorage.setItem('chat_fixed_id', id);
+      localStorage.setItem('chat_fixed_device_id', id);
     }
     return id;
   }
 
   const myId = getMyFixedId();
-  let myProfile = JSON.parse(localStorage.getItem('chat_user_profile')) || {
-    name: 'أنا',
-    age: '25',
-    avatar: DEFAULT_AVATAR
-  };
+  let myProfile = JSON.parse(localStorage.getItem('chat_my_profile')) || null;
   let contacts = JSON.parse(localStorage.getItem('chat_contacts_list')) || [];
-  let chatHistory = JSON.parse(localStorage.getItem('chat_messages_history')) || {};
+  let chatHistory = JSON.parse(localStorage.getItem('chat_history_data')) || {}; // { [contactId]: [msgs] }
+  let offlineQueue = JSON.parse(localStorage.getItem('chat_offline_queue')) || {}; // رسائل معلقة لم تصل للطرف الآخر بعد
 
-  let currentTargetId = null;
+  let activeChatId = null;
+  let selectedGender = 'male';
   let peer = null;
-  let activeConn = null;
+  let connections = {}; // دعم اتصالات متعددة
 
-  // تسجيل الصوت
+  // أدوات التسجيل الصوتي
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
 
-  // 2. تهيئة PeerJS للاتصال P2P الحقيقي
+  // صوت إشعار نقي باستخدام Web Audio API (يعمل بدون ملفات خارجية)
+  function playNotificationSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); // A5
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+    } catch(e) {}
+  }
+
+  // 2. التحقق من المستخدم الجديد لأول مرة
+  function checkOnboarding() {
+    if (!myProfile) {
+      document.getElementById('onboardingScreen').style.display = 'flex';
+    } else {
+      loadProfileUI();
+      renderChatList();
+      initPeer();
+    }
+  }
+
+  function setGender(g) {
+    selectedGender = g;
+    document.getElementById('gender-male').classList.toggle('active', g === 'male');
+    document.getElementById('gender-female').classList.toggle('active', g === 'female');
+  }
+
+  function finishOnboarding() {
+    const name = document.getElementById('ob-name').value.trim();
+    const age = document.getElementById('ob-age').value.trim();
+    if (!name || !age) return alert('يرجى ملء الاسم والعمر');
+
+    myProfile = {
+      name,
+      age,
+      gender: selectedGender,
+      avatar: selectedGender === 'male' ? BOY_AVATAR : GIRL_AVATAR
+    };
+
+    localStorage.setItem('chat_my_profile', JSON.stringify(myProfile));
+    document.getElementById('onboardingScreen').style.display = 'none';
+    loadProfileUI();
+    renderChatList();
+    initPeer();
+  }
+
+  function loadProfileUI() {
+    document.getElementById('my-id-display').textContent = myId;
+    document.getElementById('my-name').textContent = myProfile.name;
+    document.getElementById('my-age').textContent = myProfile.age;
+    document.getElementById('my-avatar').src = myProfile.avatar;
+  }
+
+  // 3. الاتصال الحي P2P عبر PeerJS
   function initPeer() {
     peer = new Peer('chat-' + myId, { debug: 1 });
 
-    peer.on('open', () => {
-      setStatus('جاهز للاتصال ✓', 'connected');
-    });
-
-    // عند استقبال اتصال من صديق
     peer.on('connection', (conn) => {
-      activeConn = conn;
-      setupConnectionEvents(conn);
       const incomingId = conn.peer.replace('chat-', '');
+      connections[incomingId] = conn;
+      setupConn(conn, incomingId);
+
+      // إضافة لجهات الاتصال إن لم يكن مضافاً
       if (!contacts.some(c => c.id === incomingId)) {
-        contacts.push({ id: incomingId, name: 'مستخدم ' + incomingId, avatar: DEFAULT_AVATAR });
+        contacts.push({
+          id: incomingId,
+          name: 'صديق ' + incomingId,
+          avatar: BOY_AVATAR
+        });
         saveContacts();
+        renderChatList();
       }
-      selectContact(incomingId, false);
     });
 
-    peer.on('error', (err) => {
-      if (err.type === 'peer-unavailable') {
-        setStatus('❌ الطرف الآخر غير متصل حالياً', 'error');
-      } else {
-        setStatus('تنبيه: ' + err.type, 'error');
-      }
+    peer.on('disconnected', () => {
+      try { peer.reconnect(); } catch(e){}
     });
   }
 
-  function setupConnectionEvents(conn) {
+  function connectToFriend(friendId) {
+    if (connections[friendId] && connections[friendId].open) return;
+    const conn = peer.connect('chat-' + friendId, { reliable: true });
+    connections[friendId] = conn;
+    setupConn(conn, friendId);
+  }
+
+  function setupConn(conn, friendId) {
     conn.on('open', () => {
-      setStatus('متصل الآن 🔗', 'connected');
-      document.getElementById('top-chat-actions').style.display = 'block';
+      updateOnlineStatus(friendId, true);
+      // إرسال أي رسائل كانت معلقة في وضع الأوفلاين
+      flushOfflineQueue(friendId);
     });
 
-    // استقبال الرسائل والأوامر الحية
     conn.on('data', (packet) => {
-      handleIncomingData(packet);
+      handleIncomingData(friendId, packet);
     });
 
-    conn.on('close', () => {
-      setStatus('انقطع الاتصال بالطرف الآخر', 'error');
-    });
+    conn.on('close', () => updateOnlineStatus(friendId, false));
+    conn.on('error', () => updateOnlineStatus(friendId, false));
   }
 
-  function connectToPeer(targetId) {
-    if (!peer || !peer.open) return;
-    setStatus('جارٍ الاتصال بـ ' + targetId + '...', '');
-    if (activeConn) { try { activeConn.close(); } catch(e){} }
-    activeConn = peer.connect('chat-' + targetId, { reliable: true });
-    setupConnectionEvents(activeConn);
+  function updateOnlineStatus(friendId, isOnline) {
+    if (activeChatId === friendId) {
+      const dot = document.getElementById('chat-status-dot');
+      const txt = document.getElementById('chat-status-text');
+      dot.className = 'status-dot ' + (isOnline ? 'online' : 'offline');
+      txt.textContent = isOnline ? 'متصل الآن' : 'غير متصل';
+    }
   }
 
-  // 3. معالجة الرسائل الواردة
-  function handleIncomingData(data) {
-    if (data.action === 'new_msg') {
-      appendMessageToStore(currentTargetId, data.msg);
-    } else if (data.action === 'edit_msg') {
-      const list = chatHistory[currentTargetId] || [];
-      const m = list.find(x => x.id === data.msgId);
+  // مزامنة الرسائل غير المستلمة
+  function flushOfflineQueue(friendId) {
+    if (offlineQueue[friendId] && offlineQueue[friendId].length > 0) {
+      offlineQueue[friendId].forEach(pkt => {
+        connections[friendId].send(pkt);
+      });
+      offlineQueue[friendId] = [];
+      localStorage.setItem('chat_offline_queue', JSON.stringify(offlineQueue));
+    }
+  }
+
+  // 4. معالجة الرسائل المستلمة
+  function handleIncomingData(friendId, data) {
+    playNotificationSound(); // تشغيل نغمة الإشعار
+
+    if (data.action === 'msg') {
+      if (!chatHistory[friendId]) chatHistory[friendId] = [];
+      chatHistory[friendId].push(data.msg);
+      saveChatHistory();
+      if (activeChatId === friendId) renderMessages();
+    } else if (data.action === 'edit') {
+      const m = (chatHistory[friendId] || []).find(x => x.id === data.msgId);
       if (m) {
         m.content = data.newContent;
         m.edited = true;
-        saveHistory();
-        renderMessages();
+        saveChatHistory();
+        if (activeChatId === friendId) renderMessages();
       }
-    } else if (data.action === 'delete_for_everyone') {
-      const list = chatHistory[currentTargetId] || [];
-      const m = list.find(x => x.id === data.msgId);
+    } else if (data.action === 'delete_everyone') {
+      const m = (chatHistory[friendId] || []).find(x => x.id === data.msgId);
       if (m) {
         m.deletedEveryone = true;
-        saveHistory();
-        renderMessages();
+        saveChatHistory();
+        if (activeChatId === friendId) renderMessages();
       }
     } else if (data.action === 'delete_entire_chat') {
-      chatHistory[currentTargetId] = [];
-      saveHistory();
-      renderMessages();
-      alert('قام الطرف الآخر بحذف المحادثة بالكامل.');
+      chatHistory[friendId] = [];
+      saveChatHistory();
+      if (activeChatId === friendId) renderMessages();
     }
   }
 
-  // 4. إرسال البيانات
-  function emitToPeer(packet) {
-    if (activeConn && activeConn.open) {
-      activeConn.send(packet);
+  // 5. إرسال البيانات
+  function sendPacket(targetId, packet) {
+    const conn = connections[targetId];
+    if (conn && conn.open) {
+      conn.send(packet);
+    } else {
+      // حفظ في كاش الرسائل المعلقة حتى يعود الطرف الثاني للاتصال
+      if (!offlineQueue[targetId]) offlineQueue[targetId] = [];
+      offlineQueue[targetId].push(packet);
+      localStorage.setItem('chat_offline_queue', JSON.stringify(offlineQueue));
     }
   }
 
-  function appendMessageToStore(contactId, msgObj) {
-    if (!chatHistory[contactId]) chatHistory[contactId] = [];
-    chatHistory[contactId].push(msgObj);
-    saveHistory();
-    renderMessages();
-  }
-
-  function sendText() {
-    const input = document.getElementById('chat-input');
+  function sendTextMessage() {
+    const input = document.getElementById('message-text-input');
     const text = input.value.trim();
-    if (!text || !currentTargetId) return;
+    if (!text || !activeChatId) return;
 
     const msg = {
       id: Date.now() + '-' + Math.random().toString(36).substr(2, 4),
@@ -541,15 +681,19 @@
       deletedForMe: false
     };
 
-    appendMessageToStore(currentTargetId, msg);
-    emitToPeer({ action: 'new_msg', msg });
+    if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
+    chatHistory[activeChatId].push(msg);
+    saveChatHistory();
+    renderMessages();
+
+    sendPacket(activeChatId, { action: 'msg', msg });
     input.value = '';
   }
 
-  function sendMediaFile(e) {
+  function handleMediaSelect(e) {
     const file = e.target.files[0];
     e.target.value = '';
-    if (!file || !currentTargetId) return;
+    if (!file || !activeChatId) return;
 
     const isVideo = file.type.startsWith('video');
     const reader = new FileReader();
@@ -564,14 +708,19 @@
         deletedEveryone: false,
         deletedForMe: false
       };
-      appendMessageToStore(currentTargetId, msg);
-      emitToPeer({ action: 'new_msg', msg });
+      if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
+      chatHistory[activeChatId].push(msg);
+      saveChatHistory();
+      renderMessages();
+
+      sendPacket(activeChatId, { action: 'msg', msg });
     };
     reader.readAsDataURL(file);
   }
 
+  // تسجيل الصوت
   async function toggleVoiceRecording() {
-    const btn = document.getElementById('voice-btn');
+    const btn = document.getElementById('voice-record-btn');
     if (!isRecording) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -592,8 +741,12 @@
               deletedEveryone: false,
               deletedForMe: false
             };
-            appendMessageToStore(currentTargetId, msg);
-            emitToPeer({ action: 'new_msg', msg });
+            if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
+            chatHistory[activeChatId].push(msg);
+            saveChatHistory();
+            renderMessages();
+
+            sendPacket(activeChatId, { action: 'msg', msg });
           };
           reader.readAsDataURL(blob);
         };
@@ -610,93 +763,136 @@
     }
   }
 
-  // 5. التعديل والحذف
-  function editMsg(msgId) {
-    const msg = (chatHistory[currentTargetId] || []).find(x => x.id === msgId);
-    if (!msg) return;
-    const newContent = prompt('تعديل الرسالة:', msg.content);
-    if (newContent && newContent.trim() !== '') {
-      msg.content = newContent.trim();
-      msg.edited = true;
-      saveHistory();
+  // 6. التعديل والحذف
+  function editMsg(id) {
+    const m = (chatHistory[activeChatId] || []).find(x => x.id === id);
+    if (!m) return;
+    const text = prompt('تعديل الرسالة:', m.content);
+    if (text && text.trim() !== '') {
+      m.content = text.trim();
+      m.edited = true;
+      saveChatHistory();
       renderMessages();
-      emitToPeer({ action: 'edit_msg', msgId, newContent: msg.content });
+      sendPacket(activeChatId, { action: 'edit', msgId: id, newContent: m.content });
     }
   }
 
-  function deleteForMe(msgId) {
-    const msg = (chatHistory[currentTargetId] || []).find(x => x.id === msgId);
-    if (!msg) return;
-    msg.deletedForMe = true;
-    saveHistory();
+  function deleteForMe(id) {
+    const m = (chatHistory[activeChatId] || []).find(x => x.id === id);
+    if (!m) return;
+    m.deletedForMe = true;
+    saveChatHistory();
     renderMessages();
   }
 
-  function deleteForEveryone(msgId) {
-    const msg = (chatHistory[currentTargetId] || []).find(x => x.id === msgId);
-    if (!msg) return;
-    msg.deletedEveryone = true;
-    saveHistory();
+  function deleteForEveryone(id) {
+    const m = (chatHistory[activeChatId] || []).find(x => x.id === id);
+    if (!m) return;
+    m.deletedEveryone = true;
+    saveChatHistory();
     renderMessages();
-    emitToPeer({ action: 'delete_for_everyone', msgId });
+    sendPacket(activeChatId, { action: 'delete_everyone', msgId: id });
   }
 
   function deleteEntireChat() {
-    if (!currentTargetId) return;
+    if (!activeChatId) return;
     if (confirm('هل أنت متأكد من حذف هذه المحادثة بالكامل من كلا الطرفين؟')) {
-      chatHistory[currentTargetId] = [];
-      saveHistory();
+      chatHistory[activeChatId] = [];
+      saveChatHistory();
       renderMessages();
-      emitToPeer({ action: 'delete_entire_chat' });
+      sendPacket(activeChatId, { action: 'delete_entire_chat' });
     }
   }
 
-  // 6. عرض المحتوى والواجهة
-  function renderMessages() {
-    const area = document.getElementById('messages-area');
-    area.innerHTML = '';
-    if (!currentTargetId) return;
+  // 7. التنقل بين الشاشات
+  function openChat(contactId) {
+    activeChatId = contactId;
+    const contact = contacts.find(c => c.id === contactId);
 
-    const list = chatHistory[currentTargetId] || [];
+    document.getElementById('chat-person-name').textContent = contact.name;
+    document.getElementById('chat-person-avatar').src = contact.avatar || BOY_AVATAR;
+
+    // محاولة الاتصال به
+    connectToFriend(contactId);
+
+    // تغيير الشاشة بتأثير الحركة
+    document.getElementById('chatScreen').classList.remove('hidden-left');
+
+    renderMessages();
+  }
+
+  function goBackToHome() {
+    document.getElementById('chatScreen').classList.add('hidden-left');
+    activeChatId = null;
+  }
+
+  function renderChatList() {
+    const list = document.getElementById('chatList');
+    list.innerHTML = '';
+    contacts.forEach(c => {
+      const item = document.createElement('div');
+      item.className = 'chat-item';
+      item.onclick = () => openChat(c.id);
+
+      const isOnline = connections[c.id] && connections[c.id].open;
+
+      item.innerHTML = `
+        <img class="avatar" src="${c.avatar || BOY_AVATAR}">
+        <div class="chat-item-info">
+          <div class="chat-item-name">${c.name}</div>
+          <div class="chat-item-sub">
+            <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
+            <span>رقم: ${c.id}</span>
+          </div>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  function renderMessages() {
+    const area = document.getElementById('messagesArea');
+    area.innerHTML = '';
+    if (!activeChatId) return;
+
+    const list = chatHistory[activeChatId] || [];
 
     list.forEach(m => {
       if (m.deletedForMe) return;
 
       const isMe = m.sender === myId;
-      const row = document.createElement('div');
-      row.className = `msg-row ${isMe ? 'me' : 'them'}`;
+      const box = document.createElement('div');
+      box.className = `msg-box ${isMe ? 'me' : 'them'}`;
 
-      let body = '';
+      let contentHtml = '';
       if (m.deletedEveryone) {
-        body = `<span style="font-style:italic;opacity:0.7;">🚫 تم حذف الرسالة</span>`;
+        contentHtml = '<span style="font-style:italic;opacity:0.7;">🚫 تم حذف هذه الرسالة</span>';
       } else if (m.type === 'text') {
-        body = `<div>${m.content}</div>`;
+        contentHtml = `<div>${m.content}</div>`;
       } else if (m.type === 'image') {
-        body = `<img src="${m.content}" class="media-element">`;
+        contentHtml = `<img src="${m.content}" class="msg-media">`;
       } else if (m.type === 'video') {
-        body = `<video src="${m.content}" class="media-element" controls></video>`;
+        contentHtml = `<video src="${m.content}" class="msg-media" controls></video>`;
       } else if (m.type === 'audio') {
-        body = `<audio src="${m.content}" controls></audio>`;
+        contentHtml = `<audio src="${m.content}" controls></audio>`;
       }
 
-      row.innerHTML = `
-        <div class="bubble">
-          <div class="bubble-header">
-            ${body}
-            ${!m.deletedEveryone ? `<button class="msg-options-btn" onclick="toggleMsgMenu(event, '${m.id}')">⋮</button>` : ''}
-          </div>
-          <div class="msg-menu" id="menu-${m.id}">
-            ${isMe && m.type === 'text' && !m.deletedEveryone ? `<button onclick="editMsg('${m.id}')">✏️ تعديل</button>` : ''}
-            <button onclick="deleteForMe('${m.id}')">🗑️ حذف من جهتي</button>
-            ${isMe && !m.deletedEveryone ? `<button class="danger" onclick="deleteForEveryone('${m.id}')">🚫 حذف للطرفين</button>` : ''}
-          </div>
-          <div class="meta-info">
-            <span>${m.time}</span>
-            ${m.edited && !m.deletedEveryone ? '<span>(معدلة)</span>' : ''}
-          </div>
+      box.innerHTML = `
+        <div class="msg-top-action">
+          ${contentHtml}
+          ${!m.deletedEveryone ? `<button class="msg-actions-btn" onclick="toggleMsgMenu(event, '${m.id}')">⋮</button>` : ''}
+        </div>
+        <div class="msg-context-menu" id="ctx-${m.id}">
+          ${isMe && m.type === 'text' && !m.deletedEveryone ? `<button onclick="editMsg('${m.id}')">✏️ تعديل</button>` : ''}
+          <button onclick="deleteForMe('${m.id}')">🗑️ حذف من جهتي</button>
+          ${isMe && !m.deletedEveryone ? `<button style="color:var(--danger);" onclick="deleteForEveryone('${m.id}')">🚫 حذف للطرفين</button>` : ''}
+        </div>
+        <div class="msg-meta">
+          <span>${m.time}</span>
+          ${m.edited && !m.deletedEveryone ? '<span>(معدلة)</span>' : ''}
         </div>
       `;
-      area.appendChild(row);
+      area.appendChild(box);
     });
 
     area.scrollTop = area.scrollHeight;
@@ -704,135 +900,44 @@
 
   function toggleMsgMenu(e, id) {
     e.stopPropagation();
-    document.querySelectorAll('.msg-menu').forEach(m => m.classList.remove('open'));
-    const menu = document.getElementById('menu-' + id);
-    if (menu) menu.classList.toggle('open');
+    document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
+    const menu = document.getElementById('ctx-' + id);
+    if (menu) menu.classList.toggle('show');
   }
 
   document.addEventListener('click', () => {
-    document.querySelectorAll('.msg-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
   });
 
-  function selectContact(targetId, shouldConnect = true) {
-    currentTargetId = targetId;
-    const c = contacts.find(x => x.id === targetId) || { name: 'مستخدم ' + targetId, avatar: DEFAULT_AVATAR };
+  // النوافذ والحفظ
+  function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+  function closeModals() { document.getElementById('addModal').classList.remove('open'); }
 
-    document.getElementById('current-chat-name').textContent = c.name;
-    document.getElementById('current-chat-id').textContent = 'رقم: ' + targetId;
-    const av = document.getElementById('current-chat-avatar');
-    av.src = c.avatar || DEFAULT_AVATAR;
-    av.style.display = 'block';
-
-    renderContacts();
-    renderMessages();
-
-    if (shouldConnect) connectToPeer(targetId);
-  }
-
-  function renderContacts() {
-    const list = document.getElementById('contacts-list');
-    list.innerHTML = '';
-    contacts.forEach(c => {
-      const li = document.createElement('li');
-      li.className = `contact-item ${currentTargetId === c.id ? 'active' : ''}`;
-      li.onclick = () => selectContact(c.id);
-      li.innerHTML = `
-        <img src="${c.avatar || DEFAULT_AVATAR}" class="avatar-img" style="width:40px;height:40px;">
-        <div>
-          <div style="font-weight:600;font-size:0.9rem;">${c.name}</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);">${c.id}</div>
-        </div>
-      `;
-      list.appendChild(li);
-    });
-  }
-
-  function addContact() {
-    const name = document.getElementById('friend-name-input').value.trim();
-    const id = document.getElementById('friend-id-input').value.trim();
+  function addFriendAndOpen() {
+    const name = document.getElementById('add-friend-name').value.trim();
+    const id = document.getElementById('add-friend-id').value.trim();
     if (!name || !id) return alert('يرجى ملء الحقول');
-    if (id === myId) return alert('لا يمكنك إضافة رقمك الشخصي');
+    if (id === myId) return alert('لا يمكنك إضافة رقمك');
 
     if (!contacts.some(c => c.id === id)) {
-      contacts.push({ id, name, avatar: DEFAULT_AVATAR });
+      contacts.push({ id, name, avatar: BOY_AVATAR });
       saveContacts();
+      renderChatList();
     }
     closeModals();
-    selectContact(id);
+    openChat(id);
   }
 
-  // 7. إدارة الملف الشخصي
-  function saveProfile() {
-    const name = document.getElementById('name-input').value.trim();
-    const age = document.getElementById('age-input').value.trim();
-    const file = document.getElementById('avatar-input').files[0];
+  function saveContacts() { localStorage.setItem('chat_contacts_list', JSON.stringify(contacts)); }
+  function saveChatHistory() { localStorage.setItem('chat_history_data', JSON.stringify(chatHistory)); }
 
-    if (name) myProfile.name = name;
-    if (age) myProfile.age = age;
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        myProfile.avatar = reader.result;
-        saveProfileData();
-      };
-      reader.readAsDataURL(file);
-    } else {
-      saveProfileData();
-    }
-  }
-
-  function saveProfileData() {
-    localStorage.setItem('chat_user_profile', JSON.stringify(myProfile));
-    updateProfileUI();
-    closeModals();
-  }
-
-  function updateProfileUI() {
-    document.getElementById('my-id-display').textContent = myId;
-    document.getElementById('my-name').textContent = myProfile.name;
-    document.getElementById('my-age').textContent = myProfile.age;
-    document.getElementById('my-avatar').src = myProfile.avatar || DEFAULT_AVATAR;
-  }
-
-  function saveContacts() {
-    localStorage.setItem('chat_contacts_list', JSON.stringify(contacts));
-    renderContacts();
-  }
-
-  function saveHistory() {
-    localStorage.setItem('chat_messages_history', JSON.stringify(chatHistory));
-  }
-
-  function setStatus(text, type) {
-    const bar = document.getElementById('chat-status');
-    bar.textContent = text;
-    bar.className = 'chat-status ' + (type || '');
-  }
-
-  function copyId() {
+  function copyMyId() {
     navigator.clipboard.writeText(myId);
-    alert('تم نسخ رقمك الثابت: ' + myId);
+    alert('تم نسخ رقم الشات: ' + myId);
   }
 
-  function openProfileModal() {
-    document.getElementById('name-input').value = myProfile.name;
-    document.getElementById('age-input').value = myProfile.age;
-    document.getElementById('profile-modal').classList.add('open');
-  }
-
-  function openAddModal() {
-    document.getElementById('add-modal').classList.add('open');
-  }
-
-  function closeModals() {
-    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
-  }
-
-  // بدء التطبيق
-  updateProfileUI();
-  renderContacts();
-  initPeer();
+  // تشغيل التطبيق
+  checkOnboarding();
 </script>
 </body>
 </html>
