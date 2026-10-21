@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق الدردشة المتكامل</title>
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-panel: #1e293b;
+      --bg-hover: #334155;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --msg-me: #1e40af;
+      --msg-other: #334155;
+      --danger: #ef4444;
+      --recording: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 340px;
+      background-color: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .profile-card {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(0, 0, 0, 0.15);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: var(--bg-hover);
+      border: 2px solid var(--primary);
+    }
+
+    .profile-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .profile-info .name {
+      font-weight: bold;
+      font-size: 1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .id-tag {
+      font-size: 0.75rem;
+      background: #0284c7;
+      padding: 3px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: 0.2s;
+    }
+
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--bg-hover); }
+    .btn-secondary:hover { background: #475569; }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #b91c1c; }
+
+    /* Contacts List */
+    .contacts-list {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    .contact-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.2s;
+    }
+
+    .contact-item:hover, .contact-item.active {
+      background-color: var(--bg-hover);
+    }
+
+    /* Chat Area */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background-color: var(--bg-main);
+    }
+
+    .chat-header {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--bg-panel);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg-wrapper {
+      display: flex;
+      flex-direction: column;
+      max-width: 65%;
+      position: relative;
+    }
+
+    .msg-wrapper.me { align-self: flex-start; }
+    .msg-wrapper.other { align-self: flex-end; }
+
+    .message-box {
+      padding: 10px 14px;
+      border-radius: 12px;
+      position: relative;
+      word-wrap: break-word;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .msg-wrapper.me .message-box {
+      background-color: var(--msg-me);
+      border-bottom-right-radius: 2px;
+    }
+
+    .msg-wrapper.other .message-box {
+      background-color: var(--msg-other);
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .msg-content {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    /* Media Styling */
+    .msg-media {
+      max-width: 280px;
+      max-height: 250px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-top: 4px;
+    }
+
+    audio {
+      width: 240px;
+      height: 38px;
+      border-radius: 20px;
+    }
+
+    .msg-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .msg-menu-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0 4px;
+    }
+
+    .msg-menu {
+      position: absolute;
+      top: 25px;
+      left: 0;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      min-width: 140px;
+    }
+
+    .msg-menu.open { display: flex; }
+
+    .msg-menu button {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      padding: 8px 12px;
+      text-align: right;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .msg-menu button:hover { background: var(--bg-hover); }
+    .msg-menu button.danger { color: var(--danger); }
+
+    /* Input Controls */
+    .input-bar {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background-color: var(--bg-panel);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-bar input[type="text"] {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background-color: var(--bg-main);
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: white;
+      background: var(--bg-hover);
+    }
+
+    .icon-btn.recording {
+      color: white;
+      background: var(--recording);
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.15); }
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-content {
+      background: var(--bg-panel);
+      padding: 24px;
+      border-radius: 12px;
+      width: 320px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-content input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-main);
+      color: white;
+      outline: none;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- User Profile Header -->
+    <div class="profile-card">
+      <img src="" id="display-avatar" class="avatar" alt="صورة الحساب">
+      <div class="profile-info">
+        <div class="name"><span id="display-name">مستخدم</span> (<span id="display-age">--</span>)</div>
+        <span class="id-tag" id="my-chat-id" title="انقر لنسخ رقم الشات" onclick="copyMyId()">جارٍ التحميل...</span>
+      </div>
+      <button class="icon-btn" onclick="openProfileModal()" title="الإعدادات">⚙️</button>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="actions-bar">
+      <span style="flex: 1; font-weight: bold; font-size: 0.9rem;">المحادثات</span>
+      <button class="btn" onclick="openAddContactModal()">➕ إضافة شخص</button>
+    </div>
+
+    <!-- Contacts List -->
+    <ul class="contacts-list" id="contacts-list"></ul>
+  </aside>
+
+  <!-- Main Chat Container -->
+  <main class="chat-container">
+    <div class="chat-header">
+      <div class="chat-header-user">
+        <img src="" id="current-contact-avatar" class="avatar" style="width:40px;height:40px;display:none;">
+        <div>
+          <h3 id="current-contact-name" style="font-size:1rem;">اختر محادثة للبدء</h3>
+          <span id="current-contact-id" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+        </div>
+      </div>
+      <div id="chat-header-actions" style="display: none;">
+        <button class="btn btn-danger" onclick="deleteChatForEveryone()" title="حذف كل المحادثة من الطرفين">🗑️ حذف الدردشة للطرفين</button>
+      </div>
+    </div>
+
+    <div class="messages-area" id="messages-area">
+      <!-- الرسائل تظهر هنا -->
+    </div>
+
+    <!-- Inputs -->
+    <div class="input-bar">
+      <!-- زر إرسال وسائط (صور وفيديو) -->
+      <label class="icon-btn" title="إرسال صورة أو فيديو">
+        📎
+        <input type="file" id="media-input" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(event)" disabled>
+      </label>
+
+      <!-- زر التسجيل الصوتي -->
+      <button class="icon-btn" id="record-btn" onclick="toggleRecording()" title="تسجيل صوتي" disabled>🎤</button>
+
+      <input type="text" id="message-input" placeholder="اكتب رسالتك..." onkeypress="handleKeyPress(event)" disabled>
+      <button class="btn" id="send-btn" onclick="sendTextMessage()" disabled>إرسال</button>
+    </div>
+  </main>
+
+  <!-- Modal: Profile Settings -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-content">
+      <h3>إعدادات الحساب</h3>
+      <label style="font-size: 0.8rem; color: var(--text-muted);">الصورة الشخصية:</label>
+      <input type="file" id="input-avatar" accept="image/*">
+      <input type="text" id="input-name" placeholder="الاسم">
+      <input type="number" id="input-age" placeholder="العمر">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('profile-modal')">إلغاء</button>
+        <button class="btn" onclick="saveProfile()">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Contact -->
+  <div class="modal-overlay" id="contact-modal">
+    <div class="modal-content">
+      <h3>إضافة شخص جديد</h3>
+      <input type="text" id="new-contact-name" placeholder="اسم الشخص">
+      <input type="text" id="new-contact-id" placeholder="رقم الشات الخاص به">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('contact-modal')">إلغاء</button>
+        <button class="btn" onclick="addContact()">إضافة</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2563eb&color=fff&name=User';
+
+    // 1. توليد أو جلب رقم الشات الثابت للجهاز
+    function initDeviceId() {
+      let id = localStorage.getItem('chat_device_id');
+      if (!id) {
+        id = 'ID-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('chat_device_id', id);
+      }
+      return id;
+    }
+
+    const myId = initDeviceId();
+    let profile = JSON.parse(localStorage.getItem('chat_profile')) || {
+      name: 'مستخدم جديد',
+      age: '25',
+      avatar: DEFAULT_AVATAR
+    };
+    let contacts = JSON.parse(localStorage.getItem('chat_contacts')) || [];
+    let messages = JSON.parse(localStorage.getItem('chat_messages')) || {};
+    let activeContactId = null;
+
+    // أدوات التسجيل الصوتي
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    // 2. تحديث الواجهة
+    function initUI() {
+      document.getElementById('my-chat-id').textContent = myId;
+      document.getElementById('display-name').textContent = profile.name;
+      document.getElementById('display-age').textContent = profile.age;
+      document.getElementById('display-avatar').src = profile.avatar || DEFAULT_AVATAR;
+      renderContacts();
+    }
+
+    function copyMyId() {
+      navigator.clipboard.writeText(myId);
+      alert('تم نسخ رقم الشات: ' + myId);
+    }
+
+    // 3. جهات الاتصال
+    function renderContacts() {
+      const list = document.getElementById('contacts-list');
+      list.innerHTML = '';
+
+      contacts.forEach(c => {
+        const li = document.createElement('li');
+        li.className = `contact-item ${activeContactId === c.id ? 'active' : ''}`;
+        li.onclick = () => selectContact(c.id);
+        li.innerHTML = `
+          <img src="${c.avatar || DEFAULT_AVATAR}" class="avatar" style="width:38px;height:38px;">
+          <div style="flex:1; overflow:hidden;">
+            <div style="font-weight:600; font-size:0.9rem;">${c.name}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${c.id}</div>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function selectContact(id) {
+      activeContactId = id;
+      const contact = contacts.find(c => c.id === id);
+      document.getElementById('current-contact-name').textContent = contact.name;
+      document.getElementById('current-contact-id').textContent = contact.id;
+
+      const avatarEl = document.getElementById('current-contact-avatar');
+      avatarEl.src = contact.avatar || DEFAULT_AVATAR;
+      avatarEl.style.display = 'block';
+
+      // تفعيل عناصر الإدخال
+      document.getElementById('message-input').disabled = false;
+      document.getElementById('send-btn').disabled = false;
+      document.getElementById('media-input').disabled = false;
+      document.getElementById('record-btn').disabled = false;
+      document.getElementById('chat-header-actions').style.display = 'block';
+
+      renderContacts();
+      renderMessages();
+    }
+
+    function addContact() {
+      const name = document.getElementById('new-contact-name').value.trim();
+      const id = document.getElementById('new-contact-id').value.trim();
+
+      if (!name || !id) return alert('يرجى ملء جميع الحقول');
+      if (id === myId) return alert('لا يمكنك إضافة نفسك!');
+      if (contacts.some(c => c.id === id)) return alert('هذا الرقم موجود بالفعل');
+
+      contacts.push({ id, name, avatar: DEFAULT_AVATAR });
+      localStorage.setItem('chat_contacts', JSON.stringify(contacts));
+
+      closeModal('contact-modal');
+      document.getElementById('new-contact-name').value = '';
+      document.getElementById('new-contact-id').value = '';
+
+      renderContacts();
+      selectContact(id);
+    }
+
+    // 4. إرسال وعرض الرسائل
+    function saveAndRender(msgObj) {
+      if (!messages[activeContactId]) messages[activeContactId] = [];
+      messages[activeContactId].push(msgObj);
+      localStorage.setItem('chat_messages', JSON.stringify(messages));
+      renderMessages();
+    }
+
+    function sendTextMessage() {
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      if (!text || !activeContactId) return;
+
+      const timeStr = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+      saveAndRender({
+        id: Date.now(),
+        sender: myId,
+        type: 'text',
+        text: text,
+        time: timeStr,
+        edited: false,
+        deletedForEveryone: false,
+        deletedForMe: false
+      });
+
+      input.value = '';
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') sendTextMessage();
+    }
+
+    // إرسال الصور والفيديوهات
+    function handleMediaUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !activeContactId) return;
+
+      const isVideo = file.type.startsWith('video');
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const timeStr = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        saveAndRender({
+          id: Date.now(),
+          sender: myId,
+          type: isVideo ? 'video' : 'image',
+          mediaUrl: e.target.result,
+          time: timeStr,
+          edited: false,
+          deletedForEveryone: false,
+          deletedForMe: false
+        });
+      };
+
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    // التسجيل الصوتي
+    async function toggleRecording() {
+      const recordBtn = document.getElementById('record-btn');
+
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) audioChunks.push(e.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = () => {
+              const timeStr = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+              saveAndRender({
+                id: Date.now(),
+                sender: myId,
+                type: 'audio',
+                mediaUrl: reader.target.result,
+                time: timeStr,
+                edited: false,
+                deletedForEveryone: false,
+                deletedForMe: false
+              });
+            };
+            reader.readAsDataURL(audioBlob);
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          recordBtn.classList.add('recording');
+        } catch (err) {
+          alert('تعذر الوصول إلى الميكروفون: ' + err.message);
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        recordBtn.classList.remove('recording');
+      }
+    }
+
+    // عرض الرسائل
+    function renderMessages() {
+      const area = document.getElementById('messages-area');
+      area.innerHTML = '';
+      if (!activeContactId) return;
+
+      const chatList = messages[activeContactId] || [];
+
+      chatList.forEach((msg, idx) => {
+        if (msg.deletedForMe) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = `msg-wrapper ${msg.sender === myId ? 'me' : 'other'}`;
+
+        let bodyContent = '';
+        if (msg.deletedForEveryone) {
+          bodyContent = `<div class="msg-content" style="font-style:italic; color:var(--text-muted);">🚫 تم حذف هذه الرسالة</div>`;
+        } else if (msg.type === 'text') {
+          bodyContent = `<div class="msg-content">${msg.text}</div>`;
+        } else if (msg.type === 'image') {
+          bodyContent = `<img src="${msg.mediaUrl}" class="msg-media">`;
+        } else if (msg.type === 'video') {
+          bodyContent = `<video src="${msg.mediaUrl}" class="msg-media" controls></video>`;
+        } else if (msg.type === 'audio') {
+          bodyContent = `<audio src="${msg.mediaUrl}" controls></audio>`;
+        }
+
+        wrapper.innerHTML = `
+          <div class="message-box">
+            <div class="msg-top-row">
+              ${bodyContent}
+              ${!msg.deletedForEveryone ? `<button class="msg-menu-btn" onclick="toggleMenu(event, ${idx})">⋮</button>` : ''}
+            </div>
+
+            <div class="msg-menu" id="menu-${idx}">
+              ${!msg.deletedForEveryone && msg.type === 'text' ? `<button onclick="editMessage(${idx})">✏️ تعديل</button>` : ''}
+              <button onclick="deleteForMe(${idx})">🗑️ حذف من جهتي</button>
+              ${!msg.deletedForEveryone ? `<button class="danger" onclick="deleteForEveryone(${idx})">🚫 حذف للطرفين</button>` : ''}
+            </div>
+          </div>
+          <div class="msg-meta">
+            <span>${msg.time}</span>
+            ${msg.edited && !msg.deletedForEveryone ? '<span>(تم التعديل)</span>' : ''}
+          </div>
+        `;
+        area.appendChild(wrapper);
+      });
+
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function toggleMenu(event, idx) {
+      event.stopPropagation();
+      document.querySelectorAll('.msg-menu').forEach(m => m.classList.remove('open'));
+      const menu = document.getElementById(`menu-${idx}`);
+      if (menu) menu.classList.toggle('open');
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.msg-menu').forEach(m => m.classList.remove('open'));
+    });
+
+    // 5. تعديل وحذف الرسائل وحذف المحادثة
+    function editMessage(idx) {
+      const msg = messages[activeContactId][idx];
+      const newText = prompt('تعديل الرسالة:', msg.text);
+      if (newText !== null && newText.trim() !== '') {
+        msg.text = newText.trim();
+        msg.edited = true;
+        localStorage.setItem('chat_messages', JSON.stringify(messages));
+        renderMessages();
+      }
+    }
+
+    function deleteForMe(idx) {
+      messages[activeContactId][idx].deletedForMe = true;
+      localStorage.setItem('chat_messages', JSON.stringify(messages));
+      renderMessages();
+    }
+
+    function deleteForEveryone(idx) {
+      messages[activeContactId][idx].deletedForEveryone = true;
+      localStorage.setItem('chat_messages', JSON.stringify(messages));
+      renderMessages();
+    }
+
+    // حذف الدردشة بالكامل للطرفين
+    function deleteChatForEveryone() {
+      if (!activeContactId) return;
+      if (confirm('هل أنت متأكد من حذف هذه المحادثة بالكامل من الطرفين؟')) {
+        messages[activeContactId] = [];
+        localStorage.setItem('chat_messages', JSON.stringify(messages));
+        renderMessages();
+      }
+    }
+
+    // 6. الملف الشخصي والصورة الشخصية
+    function openProfileModal() {
+      document.getElementById('input-name').value = profile.name;
+      document.getElementById('input-age').value = profile.age;
+      document.getElementById('profile-modal').classList.add('open');
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('input-name').value.trim();
+      const age = document.getElementById('input-age').value.trim();
+      const avatarFile = document.getElementById('input-avatar').files[0];
+
+      if (name) profile.name = name;
+      if (age) profile.age = age;
+
+      if (avatarFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          profile.avatar = e.target.result;
+          localStorage.setItem('chat_profile', JSON.stringify(profile));
+          initUI();
+          closeModal('profile-modal');
+        };
+        reader.readAsDataURL(avatarFile);
+      } else {
+        localStorage.setItem('chat_profile', JSON.stringify(profile));
+        initUI();
+        closeModal('profile-modal');
+      }
+    }
+
+    function openAddContactModal() {
+      document.getElementById('contact-modal').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // البدء
+    initUI();
+  </script>
+</body>
+</html>
