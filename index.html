@@ -6,7 +6,6 @@
   <title>دردشة الموبايل الذكية</title>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <style>
-    /* ================= الثيمات (Themes) ================= */
     :root, [data-theme="dark"] {
       --bg-body: #050811;
       --bg-app: #0b1120;
@@ -68,7 +67,6 @@
       transition: background 0.3s;
     }
 
-    /* إطار التطبيق: متناسق تماماً مع شاشات الموبايل والتابلت واللابتوب */
     .mobile-app {
       width: 100%;
       max-width: 460px;
@@ -90,7 +88,6 @@
       }
     }
 
-    /* الشاشات بنظام التنقل */
     .screen {
       position: absolute;
       inset: 0;
@@ -103,7 +100,6 @@
 
     .screen.hidden-left { transform: translateX(100%); pointer-events: none; }
 
-    /* الهيدر الرئيسي */
     .app-header {
       padding: 12px 16px;
       background: var(--primary-gradient);
@@ -113,19 +109,10 @@
       color: white;
     }
 
-    .user-profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .user-profile-badge { display: flex; align-items: center; gap: 10px; }
     .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #334155;
-      border: 2px solid rgba(255,255,255,0.4);
+      width: 44px; height: 44px; border-radius: 50%;
+      object-fit: cover; background: #334155; border: 2px solid rgba(255,255,255,0.4);
     }
     .avatar-sm { width: 38px; height: 38px; }
 
@@ -139,23 +126,12 @@
       margin-top: 3px;
     }
 
-    .header-icons {
-      display: flex;
-      gap: 6px;
-    }
+    .header-icons { display: flex; gap: 6px; }
 
-    /* قائمة المحادثات */
-    .chat-list-container {
-      flex: 1;
-      overflow-y: auto;
-    }
-
+    .chat-list-container { flex: 1; overflow-y: auto; }
     .chat-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
       cursor: pointer;
     }
     .chat-item:active { background: var(--bg-hover); }
@@ -164,32 +140,20 @@
     .chat-item-name { font-weight: 600; font-size: 0.95rem; }
     .chat-item-sub { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 6px; align-items: center; }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     .status-dot.online { background: var(--online); }
     .status-dot.offline { background: var(--offline); }
 
-    /* شاشة الدردشة */
     .chat-screen-header {
       padding: 10px 14px;
       background: var(--bg-card);
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      display: flex; align-items: center; gap: 10px;
     }
 
     .back-btn {
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-      padding: 4px 6px;
+      background: none; border: none; color: var(--text);
+      font-size: 1.4rem; cursor: pointer; padding: 4px 6px;
     }
 
     .chat-person-details { flex: 1; overflow: hidden; }
@@ -197,216 +161,108 @@
     .chat-person-status { font-size: 0.72rem; color: var(--text-muted); }
 
     .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      flex: 1; overflow-y: auto; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px;
     }
 
-    /* فقاعات الرسائل */
     .msg-box {
-      max-width: 80%;
-      padding: 8px 12px;
-      border-radius: 14px;
-      position: relative;
-      word-wrap: break-word;
-      font-size: 0.92rem;
+      max-width: 82%; padding: 8px 12px; border-radius: 14px;
+      position: relative; word-wrap: break-word; font-size: 0.92rem;
     }
     .msg-box.me {
-      align-self: flex-start;
-      background: var(--primary-gradient);
-      color: white;
-      border-bottom-right-radius: 2px;
+      align-self: flex-start; background: var(--primary-gradient);
+      color: white; border-bottom-right-radius: 2px;
     }
     .msg-box.them {
-      align-self: flex-end;
-      background: var(--bubble-them);
-      color: var(--text);
-      border-bottom-left-radius: 2px;
+      align-self: flex-end; background: var(--bubble-them);
+      color: var(--text); border-bottom-left-radius: 2px;
     }
 
-    .msg-top-action {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .msg-actions-btn {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.7);
-      cursor: pointer;
-      font-size: 1rem;
-    }
+    .msg-top-action { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .msg-actions-btn { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1rem; }
 
     .msg-context-menu {
-      position: absolute;
-      top: 25px;
-      left: 0;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      z-index: 20;
-      display: none;
-      flex-direction: column;
-      min-width: 130px;
+      position: absolute; top: 25px; left: 0; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 20; display: none;
+      flex-direction: column; min-width: 130px;
     }
     .msg-context-menu.show { display: flex; }
     .msg-context-menu button {
-      background: none;
-      border: none;
-      color: var(--text);
-      padding: 8px 12px;
-      text-align: right;
-      font-size: 0.8rem;
-      cursor: pointer;
+      background: none; border: none; color: var(--text); padding: 8px 12px;
+      text-align: right; font-size: 0.8rem; cursor: pointer;
     }
     .msg-context-menu button:hover { background: var(--bg-hover); }
 
-    .msg-meta {
-      font-size: 0.65rem;
-      opacity: 0.7;
-      margin-top: 3px;
-      display: flex;
-      gap: 6px;
-    }
+    .msg-meta { font-size: 0.65rem; opacity: 0.7; margin-top: 3px; display: flex; gap: 6px; }
 
-    .msg-media {
-      max-width: 100%;
-      max-height: 220px;
-      border-radius: 8px;
-      margin-top: 5px;
-      display: block;
-    }
-
+    .msg-media { max-width: 100%; max-height: 220px; border-radius: 8px; margin-top: 5px; display: block; }
     audio { width: 200px; height: 35px; margin-top: 5px; }
 
-    /* دائرة التحميل عند الإرسال */
+    /* مؤشر التحميل المتطور مع شريط التقدم */
     .loader-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px;
-      font-size: 0.8rem;
+      display: flex; flex-direction: column; gap: 6px; padding: 6px 0; font-size: 0.8rem;
     }
-
+    .loader-row { display: flex; align-items: center; gap: 8px; }
     .spinner {
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: #ffffff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* حقل الكتابة السفلي */
-    .chat-bottom-bar {
-      padding: 10px;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .progress-bar-bg {
+      width: 100%; height: 5px; background: rgba(0,0,0,0.25); border-radius: 4px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; width: 0%; background: #ffffff; transition: width 0.15s ease;
     }
 
+    .chat-bottom-bar {
+      padding: 10px; background: var(--bg-card); border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
     .chat-bottom-bar input[type="text"] {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: var(--bg-app);
-      color: var(--text);
-      outline: none;
-      font-size: 0.9rem;
+      flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--bg-app); color: var(--text); outline: none; font-size: 0.9rem;
     }
 
     .round-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: var(--bg-app);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1rem;
+      width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--bg-app); color: var(--text); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 1rem;
     }
     .round-btn.send { background: var(--primary-gradient); color: #fff; border: none; }
     .round-btn.recording { background: var(--danger); color: #fff; animation: pulse 1s infinite alternate; }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.15); }
-    }
+    @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 
-    /* النوافذ المنبثقة والشاشات */
     .modal-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 50;
-      padding: 20px;
+      position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: none;
+      justify-content: center; align-items: center; z-index: 50; padding: 20px;
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
-      width: 100%;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      width: 100%; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
     }
 
     .form-input {
-      padding: 11px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--bg-app);
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
+      padding: 11px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-app); color: var(--text); font-size: 0.95rem; outline: none;
     }
-
     .btn-submit {
-      padding: 11px;
-      border-radius: 10px;
-      border: none;
-      background: var(--primary-gradient);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.95rem;
+      padding: 11px; border-radius: 10px; border: none; background: var(--primary-gradient);
+      color: white; font-weight: bold; cursor: pointer; font-size: 0.95rem;
     }
 
-    /* شاشة التسجيل لأول مرة */
     .onboarding-screen {
-      position: absolute;
-      inset: 0;
-      background: var(--bg-app);
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 24px;
-      gap: 14px;
+      position: absolute; inset: 0; background: var(--bg-app); z-index: 100;
+      display: flex; flex-direction: column; justify-content: center; padding: 24px; gap: 14px;
     }
     .gender-selector { display: flex; gap: 10px; }
     .gender-option {
-      flex: 1; padding: 12px; background: var(--bg-card);
-      border: 1px solid var(--border); border-radius: 10px;
-      text-align: center; cursor: pointer; font-weight: bold;
+      flex: 1; padding: 12px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; text-align: center; cursor: pointer; font-weight: bold;
     }
     .gender-option.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.15); }
   </style>
@@ -414,20 +270,16 @@
 <body>
 
 <div class="mobile-app">
-
   <!-- 1. شاشة البداية / التسجيل لأول مرة -->
   <div class="onboarding-screen" id="onboardingScreen" style="display: none;">
     <h2 style="text-align:center;">مرحباً بك 👋</h2>
     <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);">يرجى تحديد بياناتك للدخول</p>
-
     <input type="text" id="ob-name" class="form-input" placeholder="اسمك المستعار">
     <input type="number" id="ob-age" class="form-input" placeholder="العمر">
-
     <div class="gender-selector">
       <div class="gender-option active" id="gender-male" onclick="setGender('male')">👦 ذكر</div>
       <div class="gender-option" id="gender-female" onclick="setGender('female')">👧 أنثى</div>
     </div>
-
     <button class="btn-submit" onclick="finishOnboarding()">دخول</button>
   </div>
 
@@ -446,10 +298,7 @@
         <button class="round-btn" onclick="openAddModal()" title="إضافة شخص">➕</button>
       </div>
     </header>
-
-    <div class="chat-list-container" id="chatList">
-      <!-- جهات الاتصال -->
-    </div>
+    <div class="chat-list-container" id="chatList"></div>
   </div>
 
   <!-- 3. شاشة المحادثة الفردية -->
@@ -492,14 +341,61 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
   const BOY_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=b6e3f4';
   const GIRL_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=ffd5dc';
+  const CHUNK_SIZE = 16 * 1024; // 16KB لكل جزء لتجنب اختناق WebRTC DataChannel
 
-  // 1. إدارة الهوية
+  // ==================== 1. نظام التخزين الكبير عبر IndexedDB ====================
+  let db;
+  function initDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('ChatMediaDB', 1);
+      request.onupgradeneeded = (e) => {
+        const d = e.target.result;
+        if (!d.objectStoreNames.contains('media_store')) {
+          d.createObjectStore('media_store');
+        }
+      };
+      request.onsuccess = (e) => {
+        db = e.target.result;
+        resolve(db);
+      };
+      request.onerror = (e) => reject(e);
+    });
+  }
+
+  function saveMediaBlob(key, blob) {
+    return new Promise((resolve) => {
+      if (!db) return resolve(null);
+      const tx = db.transaction('media_store', 'readwrite');
+      const store = tx.objectStore('media_store');
+      store.put(blob, key);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    });
+  }
+
+  function getMediaBlob(key) {
+    return new Promise((resolve) => {
+      if (!db) return resolve(null);
+      const tx = db.transaction('media_store', 'readonly');
+      const store = tx.objectStore('media_store');
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => resolve(null);
+    });
+  }
+
+  function deleteMediaBlob(key) {
+    if (!db) return;
+    const tx = db.transaction('media_store', 'readwrite');
+    tx.objectStore('media_store').delete(key);
+  }
+
+  // ==================== 2. الهوية والإعدادات ====================
   function getMyFixedId() {
     let id = localStorage.getItem('chat_fixed_device_id');
     if (!id || !/^\d{7}$/.test(id)) {
@@ -519,28 +415,25 @@
   let selectedGender = 'male';
   let peer = null;
   let connections = {};
+  let incomingChunks = {}; // تخزين الأجزاء المستلمة مؤقتاً { msgId: { chunks: [], total, received, type } }
 
-  // التسجيل الصوتي
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
 
-  // 2. إدارة الثيمات الـ 3 (dark -> emerald -> light)
   const THEMES = ['dark', 'emerald', 'light'];
   let currentTheme = localStorage.getItem('chat_theme') || 'dark';
 
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('chat_theme', theme);
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('chat_theme', t);
   }
-
   function toggleTheme() {
     const nextIdx = (THEMES.indexOf(currentTheme) + 1) % THEMES.length;
     currentTheme = THEMES[nextIdx];
     applyTheme(currentTheme);
   }
 
-  // 3. نغمة التنبيه الصوتية
   function playNotificationSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -558,7 +451,7 @@
     } catch(e) {}
   }
 
-  // 4. فحص روابط الدعوة السريعة (#invite=1234567)
+  // ==================== 3. فحص البداية ورابط الدعوة ====================
   function checkInviteLink() {
     const hash = window.location.hash;
     if (hash.startsWith('#invite=')) {
@@ -578,11 +471,11 @@
   function copyInviteLink() {
     const url = window.location.origin + window.location.pathname + '#invite=' + myId;
     navigator.clipboard.writeText(url);
-    alert('تم نسخ رابط الدعوة الخاص بك!\nأي شخص يفتحه سينضاف لك تلقائياً:\n' + url);
+    alert('تم نسخ رابط الدعوة الخاص بك بنجاح!');
   }
 
-  // 5. بدء التسجيل والواجهة
-  function checkOnboarding() {
+  async function checkOnboarding() {
+    await initDB();
     applyTheme(currentTheme);
     if (!myProfile) {
       document.getElementById('onboardingScreen').style.display = 'flex';
@@ -606,12 +499,9 @@
     if (!name || !age) return alert('يرجى ملء الاسم والعمر');
 
     myProfile = {
-      name,
-      age,
-      gender: selectedGender,
+      name, age, gender: selectedGender,
       avatar: selectedGender === 'male' ? BOY_AVATAR : GIRL_AVATAR
     };
-
     localStorage.setItem('chat_my_profile', JSON.stringify(myProfile));
     document.getElementById('onboardingScreen').style.display = 'none';
     loadProfileUI();
@@ -626,7 +516,7 @@
     document.getElementById('my-avatar').src = myProfile.avatar;
   }
 
-  // 6. الاتصال الحي P2P عبر PeerJS
+  // ==================== 4. الاتصال الحي P2P عبر PeerJS ====================
   function initPeer() {
     peer = new Peer('chat-' + myId, { debug: 1 });
 
@@ -685,8 +575,55 @@
     }
   }
 
-  // 7. معالجة البيانات والرسائل
-  function handleIncomingData(friendId, data) {
+  // ==================== 5. معالجة الرسائل واستقبال الملفات المقطعة ====================
+  async function handleIncomingData(friendId, data) {
+    // استقبال جزء من وسائط كبيرة (Chunking)
+    if (data.action === 'chunk_start') {
+      incomingChunks[data.msgId] = {
+        meta: data.msg,
+        chunks: [],
+        total: data.totalChunks,
+        received: 0,
+        mimeType: data.mimeType
+      };
+
+      // إضافة فقاعة قيد التحميل لدى المستقبل
+      if (!chatHistory[friendId]) chatHistory[friendId] = [];
+      chatHistory[friendId].push(data.msg);
+      saveChatHistory();
+      if (activeChatId === friendId) renderMessages();
+      return;
+    }
+
+    if (data.action === 'chunk_data') {
+      const session = incomingChunks[data.msgId];
+      if (!session) return;
+
+      session.chunks[data.index] = data.chunk;
+      session.received++;
+
+      // تحديث شريط التقدم عند المستقبل
+      const percent = Math.floor((session.received / session.total) * 100);
+      updateProgressUI(data.msgId, percent);
+
+      if (session.received === session.total) {
+        // اكتمال الملف بالكامل -> دمجه
+        const blob = new Blob(session.chunks, { type: session.mimeType });
+        await saveMediaBlob(data.msgId, blob);
+
+        const m = (chatHistory[friendId] || []).find(x => x.id === data.msgId);
+        if (m) {
+          m.loading = false;
+          m.mediaKey = data.msgId; // مفتاح IndexedDB
+          saveChatHistory();
+          if (activeChatId === friendId) renderMessages();
+        }
+        delete incomingChunks[data.msgId];
+        playNotificationSound();
+      }
+      return;
+    }
+
     playNotificationSound();
 
     if (data.action === 'msg') {
@@ -706,10 +643,12 @@
       const m = (chatHistory[friendId] || []).find(x => x.id === data.msgId);
       if (m) {
         m.deletedEveryone = true;
+        deleteMediaBlob(m.mediaKey);
         saveChatHistory();
         if (activeChatId === friendId) renderMessages();
       }
     } else if (data.action === 'delete_entire_chat') {
+      (chatHistory[friendId] || []).forEach(m => { if (m.mediaKey) deleteMediaBlob(m.mediaKey); });
       chatHistory[friendId] = [];
       saveChatHistory();
       if (activeChatId === friendId) renderMessages();
@@ -724,6 +663,118 @@
       if (!offlineQueue[targetId]) offlineQueue[targetId] = [];
       offlineQueue[targetId].push(packet);
       localStorage.setItem('chat_offline_queue', JSON.stringify(offlineQueue));
+    }
+  }
+
+  function updateProgressUI(msgId, percent) {
+    const fill = document.getElementById('fill-' + msgId);
+    const txt = document.getElementById('txt-' + msgId);
+    if (fill) fill.style.width = percent + '%';
+    if (txt) txt.textContent = percent + '%';
+  }
+
+  // ==================== 6. إرسال الوسائط بنظام التقطيع الآمن ====================
+  async function sendMediaChunked(fileOrBlob, type, targetId) {
+    const msgId = Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+
+    // 1. حفظ في IndexedDB المحلي فوراً
+    await saveMediaBlob(msgId, fileOrBlob);
+
+    // 2. إنشاء رسالة مع مؤشر تحميل
+    const msg = {
+      id: msgId,
+      sender: myId,
+      type: type,
+      mediaKey: msgId,
+      loading: true,
+      time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+      edited: false,
+      deletedEveryone: false,
+      deletedForMe: false
+    };
+
+    if (!chatHistory[targetId]) chatHistory[targetId] = [];
+    chatHistory[targetId].push(msg);
+    saveChatHistory();
+    renderMessages();
+
+    // 3. تقسيم الملف إلى مصفوفة بايتات
+    const arrayBuffer = await fileOrBlob.arrayBuffer();
+    const totalBytes = arrayBuffer.byteLength;
+    const totalChunks = Math.ceil(totalBytes / CHUNK_SIZE);
+
+    // إرسال إشعار بداية التحميل للطرف الآخر
+    sendPacket(targetId, {
+      action: 'chunk_start',
+      msgId: msgId,
+      totalChunks: totalChunks,
+      mimeType: fileOrBlob.type,
+      msg: { ...msg, loading: true }
+    });
+
+    // 4. إرسال الأجزاء تدريجياً لعدم تجميد القناة
+    let chunkIndex = 0;
+    async function sendNextChunk() {
+      if (chunkIndex < totalChunks) {
+        const start = chunkIndex * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, totalBytes);
+        const chunk = arrayBuffer.slice(start, end);
+
+        sendPacket(targetId, {
+          action: 'chunk_data',
+          msgId: msgId,
+          index: chunkIndex,
+          chunk: chunk
+        });
+
+        chunkIndex++;
+        const percent = Math.floor((chunkIndex / totalChunks) * 100);
+        updateProgressUI(msgId, percent);
+
+        // فاصل زمني بسيط جداً (5 مللي ثانية) للسماح للمتصفح بالتنفس
+        setTimeout(sendNextChunk, 5);
+      } else {
+        // تم الانتهاء بنجاح
+        msg.loading = false;
+        saveChatHistory();
+        renderMessages();
+      }
+    }
+
+    sendNextChunk();
+  }
+
+  function handleMediaUpload(e) {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file || !activeChatId) return;
+
+    const isVideo = file.type.startsWith('video');
+    sendMediaChunked(file, isVideo ? 'video' : 'image', activeChatId);
+  }
+
+  async function toggleVoiceRecording() {
+    const btn = document.getElementById('voice-record-btn');
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: 'audio/webm' });
+          sendMediaChunked(blob, 'audio', activeChatId);
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        btn.classList.add('recording');
+      } catch(e) {
+        alert('تعذر فتح الميكروفون: ' + e.message);
+      }
+    } else {
+      mediaRecorder.stop();
+      isRecording = false;
+      btn.classList.remove('recording');
     }
   }
 
@@ -753,101 +804,88 @@
     input.value = '';
   }
 
-  // رفع الملف مع إظهار دائرة تحميل
-  function handleMediaUpload(e) {
-    const file = e.target.files[0];
-    e.target.value = '';
-    if (!file || !activeChatId) return;
+  // ==================== 7. عرض الرسائل مع استرجاع الميديا من IndexedDB ====================
+  async function renderMessages() {
+    const area = document.getElementById('messagesArea');
+    area.innerHTML = '';
+    if (!activeChatId) return;
 
-    const isVideo = file.type.startsWith('video');
-    const tempId = Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+    const list = chatHistory[activeChatId] || [];
 
-    // 1. إضافة فقاعة تحميل مؤقتة داخل الشات
-    const tempMsg = {
-      id: tempId,
-      sender: myId,
-      type: isVideo ? 'video' : 'image',
-      content: '',
-      loading: true, // تفعيل دائرة التحميل
-      time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-      edited: false,
-      deletedEveryone: false,
-      deletedForMe: false
-    };
+    for (const m of list) {
+      if (m.deletedForMe) continue;
 
-    if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
-    chatHistory[activeChatId].push(tempMsg);
-    renderMessages();
+      const isMe = m.sender === myId;
+      const box = document.createElement('div');
+      box.className = `msg-box ${isMe ? 'me' : 'them'}`;
 
-    // 2. قراءة الملف
-    const reader = new FileReader();
-    reader.onload = () => {
-      setTimeout(() => { // محاكاة سلاسة الإرسال
-        tempMsg.content = reader.result;
-        tempMsg.loading = false; // إنهاء التحميل
-        saveChatHistory();
-        renderMessages();
+      let contentHtml = '';
+      if (m.loading) {
+        contentHtml = `
+          <div class="loader-box">
+            <div class="loader-row">
+              <div class="spinner"></div>
+              <span>جارِ النقل (<span id="txt-${m.id}">0%</span>)...</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="fill-${m.id}"></div>
+            </div>
+          </div>
+        `;
+      } else if (m.deletedEveryone) {
+        contentHtml = '<span style="font-style:italic;opacity:0.7;">🚫 تم حذف هذه الرسالة</span>';
+      } else if (m.type === 'text') {
+        contentHtml = `<div>${m.content}</div>`;
+      } else {
+        // استدعاء من IndexedDB بأمان وبشكل فوري
+        let blobUrl = '';
+        if (m.mediaKey) {
+          const blob = await getMediaBlob(m.mediaKey);
+          if (blob) blobUrl = URL.createObjectURL(blob);
+        }
 
-        sendPacket(activeChatId, { action: 'msg', msg: tempMsg });
-      }, 600);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // تسجيل الصوت مع دائرة التحميل
-  async function toggleVoiceRecording() {
-    const btn = document.getElementById('voice-record-btn');
-    if (!isRecording) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-        mediaRecorder.onstop = () => {
-          const tempId = Date.now() + '-' + Math.random().toString(36).substr(2, 4);
-          const tempMsg = {
-            id: tempId,
-            sender: myId,
-            type: 'audio',
-            content: '',
-            loading: true,
-            time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-            edited: false,
-            deletedEveryone: false,
-            deletedForMe: false
-          };
-
-          chatHistory[activeChatId].push(tempMsg);
-          renderMessages();
-
-          const blob = new Blob(audioChunks, { type: 'audio/webm' });
-          const reader = new FileReader();
-          reader.onload = () => {
-            setTimeout(() => {
-              tempMsg.content = reader.result;
-              tempMsg.loading = false;
-              saveChatHistory();
-              renderMessages();
-
-              sendPacket(activeChatId, { action: 'msg', msg: tempMsg });
-            }, 500);
-          };
-          reader.readAsDataURL(blob);
-        };
-        mediaRecorder.start();
-        isRecording = true;
-        btn.classList.add('recording');
-      } catch(e) {
-        alert('تعذر الوصول إلى الميكروفون: ' + e.message);
+        if (blobUrl) {
+          if (m.type === 'image') contentHtml = `<img src="${blobUrl}" class="msg-media">`;
+          else if (m.type === 'video') contentHtml = `<video src="${blobUrl}" class="msg-media" controls></video>`;
+          else if (m.type === 'audio') contentHtml = `<audio src="${blobUrl}" controls></audio>`;
+        } else {
+          contentHtml = `<span style="font-size:0.8rem;color:var(--text-muted);">⚠️ الوسائط غير متاحة</span>`;
+        }
       }
-    } else {
-      mediaRecorder.stop();
-      isRecording = false;
-      btn.classList.remove('recording');
+
+      box.innerHTML = `
+        <div class="msg-top-action">
+          <div style="flex:1;">${contentHtml}</div>
+          ${!m.deletedEveryone && !m.loading ? `<button class="msg-actions-btn" onclick="toggleMsgMenu(event, '${m.id}')">⋮</button>` : ''}
+        </div>
+        <div class="msg-context-menu" id="ctx-${m.id}">
+          ${isMe && m.type === 'text' && !m.deletedEveryone ? `<button onclick="editMsg('${m.id}')">✏️ تعديل</button>` : ''}
+          <button onclick="deleteForMe('${m.id}')">🗑️ حذف من جهتي</button>
+          ${isMe && !m.deletedEveryone ? `<button style="color:var(--danger);" onclick="deleteForEveryone('${m.id}')">🚫 حذف للطرفين</button>` : ''}
+        </div>
+        <div class="msg-meta">
+          <span>${m.time}</span>
+          ${m.edited && !m.deletedEveryone ? '<span>(معدلة)</span>' : ''}
+        </div>
+      `;
+      area.appendChild(box);
     }
+
+    area.scrollTop = area.scrollHeight;
   }
 
-  // 8. تعديل وحذف
+  function toggleMsgMenu(e, id) {
+    e.stopPropagation();
+    document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
+    const menu = document.getElementById('ctx-' + id);
+    if (menu) menu.classList.toggle('show');
+  }
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
+  });
+
+  // ==================== 8. الحذف والتعديل ====================
   function editMsg(id) {
     const m = (chatHistory[activeChatId] || []).find(x => x.id === id);
     if (!m) return;
@@ -873,6 +911,7 @@
     const m = (chatHistory[activeChatId] || []).find(x => x.id === id);
     if (!m) return;
     m.deletedEveryone = true;
+    if (m.mediaKey) deleteMediaBlob(m.mediaKey);
     saveChatHistory();
     renderMessages();
     sendPacket(activeChatId, { action: 'delete_everyone', msgId: id });
@@ -881,6 +920,7 @@
   function deleteEntireChat() {
     if (!activeChatId) return;
     if (confirm('حذف هذه المحادثة بالكامل من الطرفين؟')) {
+      (chatHistory[activeChatId] || []).forEach(m => { if (m.mediaKey) deleteMediaBlob(m.mediaKey); });
       chatHistory[activeChatId] = [];
       saveChatHistory();
       renderMessages();
@@ -888,7 +928,7 @@
     }
   }
 
-  // 9. الواجهة والتنقل
+  // ==================== 9. الملاحة والقوائم ====================
   function openChat(contactId) {
     activeChatId = contactId;
     const contact = contacts.find(c => c.id === contactId);
@@ -930,73 +970,6 @@
     });
   }
 
-  function renderMessages() {
-    const area = document.getElementById('messagesArea');
-    area.innerHTML = '';
-    if (!activeChatId) return;
-
-    const list = chatHistory[activeChatId] || [];
-
-    list.forEach(m => {
-      if (m.deletedForMe) return;
-
-      const isMe = m.sender === myId;
-      const box = document.createElement('div');
-      box.className = `msg-box ${isMe ? 'me' : 'them'}`;
-
-      let contentHtml = '';
-      if (m.loading) {
-        // دائرة التحميل أثناء الرفع
-        contentHtml = `
-          <div class="loader-box">
-            <div class="spinner"></div>
-            <span>جارِ الرفع والتحميل...</span>
-          </div>
-        `;
-      } else if (m.deletedEveryone) {
-        contentHtml = '<span style="font-style:italic;opacity:0.7;">🚫 تم حذف هذه الرسالة</span>';
-      } else if (m.type === 'text') {
-        contentHtml = `<div>${m.content}</div>`;
-      } else if (m.type === 'image') {
-        contentHtml = `<img src="${m.content}" class="msg-media">`;
-      } else if (m.type === 'video') {
-        contentHtml = `<video src="${m.content}" class="msg-media" controls></video>`;
-      } else if (m.type === 'audio') {
-        contentHtml = `<audio src="${m.content}" controls></audio>`;
-      }
-
-      box.innerHTML = `
-        <div class="msg-top-action">
-          ${contentHtml}
-          ${!m.deletedEveryone && !m.loading ? `<button class="msg-actions-btn" onclick="toggleMsgMenu(event, '${m.id}')">⋮</button>` : ''}
-        </div>
-        <div class="msg-context-menu" id="ctx-${m.id}">
-          ${isMe && m.type === 'text' && !m.deletedEveryone ? `<button onclick="editMsg('${m.id}')">✏️ تعديل</button>` : ''}
-          <button onclick="deleteForMe('${m.id}')">🗑️ حذف من جهتي</button>
-          ${isMe && !m.deletedEveryone ? `<button style="color:var(--danger);" onclick="deleteForEveryone('${m.id}')">🚫 حذف للطرفين</button>` : ''}
-        </div>
-        <div class="msg-meta">
-          <span>${m.time}</span>
-          ${m.edited && !m.deletedEveryone ? '<span>(معدلة)</span>' : ''}
-        </div>
-      `;
-      area.appendChild(box);
-    });
-
-    area.scrollTop = area.scrollHeight;
-  }
-
-  function toggleMsgMenu(e, id) {
-    e.stopPropagation();
-    document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
-    const menu = document.getElementById('ctx-' + id);
-    if (menu) menu.classList.toggle('show');
-  }
-
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
-  });
-
   function openAddModal() { document.getElementById('addModal').classList.add('open'); }
   function closeModals() { document.getElementById('addModal').classList.remove('open'); }
 
@@ -1016,9 +989,12 @@
   }
 
   function saveContacts() { localStorage.setItem('chat_contacts_list', JSON.stringify(contacts)); }
-  function saveChatHistory() { localStorage.setItem('chat_history_data', JSON.stringify(chatHistory)); }
+  function saveChatHistory() {
+    // حفظ نصوص الرسائل ومراجع الميديا فقط بدون البيانات الثقيلة لحماية الـ localStorage
+    localStorage.setItem('chat_history_data', JSON.stringify(chatHistory));
+  }
 
-  // تشغيل التطبيق
+  // انطلاق التطبيق
   checkOnboarding();
 </script>
 </body>
