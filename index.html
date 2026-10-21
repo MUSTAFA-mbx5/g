@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>تطبيق المحادثة</title>
+  <title>دردشة الموبايل الذكية</title>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <style>
-    :root {
-      --bg-main: #0b1120;
+    /* ================= الثيمات (Themes) ================= */
+    :root, [data-theme="dark"] {
+      --bg-body: #050811;
+      --bg-app: #0b1120;
       --bg-card: #111c31;
       --bg-hover: #1e293b;
       --primary: #6366f1;
@@ -15,34 +17,77 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #1e293b;
+      --bubble-them: #1e293b;
       --online: #10b981;
       --offline: #64748b;
       --danger: #ef4444;
     }
 
+    [data-theme="emerald"] {
+      --bg-body: #021a12;
+      --bg-app: #06281e;
+      --bg-card: #0b382b;
+      --bg-hover: #134e3d;
+      --primary: #10b981;
+      --primary-gradient: linear-gradient(135deg, #059669, #10b981);
+      --text: #f0fdf4;
+      --text-muted: #a7f3d0;
+      --border: #134e3d;
+      --bubble-them: #0b382b;
+      --online: #34d399;
+      --offline: #64748b;
+      --danger: #f87171;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #e2e8f0;
+      --bg-app: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-hover: #f1f5f9;
+      --primary: #2563eb;
+      --primary-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bubble-them: #e2e8f0;
+      --online: #16a34a;
+      --offline: #94a3b8;
+      --danger: #dc2626;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
 
     body {
-      background: #020617;
+      background: var(--bg-body);
       color: var(--text);
       height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      transition: background 0.3s;
     }
 
-    /* هيكل تطبيق الهاتف */
+    /* إطار التطبيق: متناسق تماماً مع شاشات الموبايل والتابلت واللابتوب */
     .mobile-app {
       width: 100%;
-      max-width: 480px;
+      max-width: 460px;
       height: 100dvh;
-      background: var(--bg-main);
+      background: var(--bg-app);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+    }
+
+    @media (min-width: 768px) {
+      .mobile-app {
+        height: 94dvh;
+        max-height: 840px;
+        border-radius: 26px;
+      }
     }
 
     /* الشاشات بنظام التنقل */
@@ -51,23 +96,21 @@
       inset: 0;
       display: flex;
       flex-direction: column;
-      background: var(--bg-main);
+      background: var(--bg-app);
       transition: transform 0.25s ease-in-out;
       z-index: 10;
     }
 
     .screen.hidden-left { transform: translateX(100%); pointer-events: none; }
-    .screen.hidden-right { transform: translateX(-100%); pointer-events: none; }
 
-    /* الهيدر العلوي */
+    /* الهيدر الرئيسي */
     .app-header {
-      padding: 14px 16px;
+      padding: 12px 16px;
       background: var(--primary-gradient);
       display: flex;
       align-items: center;
       justify-content: space-between;
       color: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     .user-profile-badge {
@@ -77,24 +120,28 @@
     }
 
     .avatar {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       object-fit: cover;
       background: #334155;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.4);
     }
-
-    .avatar-sm { width: 36px; height: 36px; }
+    .avatar-sm { width: 38px; height: 38px; }
 
     .id-tag {
       font-size: 0.72rem;
       background: rgba(0,0,0,0.25);
-      padding: 2px 8px;
+      padding: 3px 8px;
       border-radius: 12px;
       cursor: pointer;
       display: inline-block;
-      margin-top: 2px;
+      margin-top: 3px;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 6px;
     }
 
     /* قائمة المحادثات */
@@ -108,26 +155,25 @@
       align-items: center;
       gap: 12px;
       padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid var(--border);
       cursor: pointer;
     }
     .chat-item:active { background: var(--bg-hover); }
 
     .chat-item-info { flex: 1; overflow: hidden; }
     .chat-item-name { font-weight: 600; font-size: 0.95rem; }
-    .chat-item-sub { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 6px; }
+    .chat-item-sub { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 6px; align-items: center; }
 
     .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       display: inline-block;
-      align-self: center;
     }
     .status-dot.online { background: var(--online); }
     .status-dot.offline { background: var(--offline); }
 
-    /* شاشة الدردشة الفردية */
+    /* شاشة الدردشة */
     .chat-screen-header {
       padding: 10px 14px;
       background: var(--bg-card);
@@ -140,10 +186,10 @@
     .back-btn {
       background: none;
       border: none;
-      color: white;
+      color: var(--text);
       font-size: 1.4rem;
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 4px 6px;
     }
 
     .chat-person-details { flex: 1; overflow: hidden; }
@@ -159,9 +205,9 @@
       gap: 10px;
     }
 
-    /* رسائل المحادثة */
+    /* فقاعات الرسائل */
     .msg-box {
-      max-width: 78%;
+      max-width: 80%;
       padding: 8px 12px;
       border-radius: 14px;
       position: relative;
@@ -176,21 +222,22 @@
     }
     .msg-box.them {
       align-self: flex-end;
-      background: #1e293b;
-      color: #e2e8f0;
+      background: var(--bubble-them);
+      color: var(--text);
       border-bottom-left-radius: 2px;
     }
 
     .msg-top-action {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 8px;
     }
 
     .msg-actions-btn {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.7);
       cursor: pointer;
       font-size: 1rem;
     }
@@ -201,7 +248,7 @@
       left: 0;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.5);
       z-index: 20;
       display: none;
@@ -230,12 +277,32 @@
 
     .msg-media {
       max-width: 100%;
-      max-height: 200px;
+      max-height: 220px;
       border-radius: 8px;
       margin-top: 5px;
+      display: block;
     }
 
     audio { width: 200px; height: 35px; margin-top: 5px; }
+
+    /* دائرة التحميل عند الإرسال */
+    .loader-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      font-size: 0.8rem;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* حقل الكتابة السفلي */
     .chat-bottom-bar {
@@ -252,8 +319,8 @@
       padding: 10px 14px;
       border-radius: 20px;
       border: 1px solid var(--border);
-      background: var(--bg-main);
-      color: white;
+      background: var(--bg-app);
+      color: var(--text);
       outline: none;
       font-size: 0.9rem;
     }
@@ -263,87 +330,23 @@
       height: 38px;
       border-radius: 50%;
       border: 1px solid var(--border);
-      background: var(--bg-main);
-      color: white;
+      background: var(--bg-app);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       font-size: 1rem;
     }
-    .round-btn.send { background: var(--primary-gradient); border: none; }
-    .round-btn.recording { background: #dc2626; animation: pulse 1s infinite alternate; }
+    .round-btn.send { background: var(--primary-gradient); color: #fff; border: none; }
+    .round-btn.recording { background: var(--danger); color: #fff; animation: pulse 1s infinite alternate; }
 
     @keyframes pulse {
       0% { transform: scale(1); }
       100% { transform: scale(1.15); }
     }
 
-    /* شاشة التسجيل لأول مرة (Onboarding) */
-    .onboarding-screen {
-      position: absolute;
-      inset: 0;
-      background: var(--bg-main);
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 24px;
-      gap: 16px;
-    }
-
-    .onboarding-screen h2 {
-      text-align: center;
-      margin-bottom: 6px;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 0.8rem; color: var(--text-muted); }
-    .form-input {
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .gender-selector {
-      display: flex;
-      gap: 12px;
-    }
-    .gender-option {
-      flex: 1;
-      padding: 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .gender-option.active {
-      border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.15);
-    }
-
-    .btn-submit {
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      background: var(--primary-gradient);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 8px;
-    }
-
-    /* النوافذ المنبثقة */
+    /* النوافذ المنبثقة والشاشات */
     .modal-overlay {
       position: absolute;
       inset: 0;
@@ -365,6 +368,47 @@
       flex-direction: column;
       gap: 12px;
     }
+
+    .form-input {
+      padding: 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-app);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .btn-submit {
+      padding: 11px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary-gradient);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    /* شاشة التسجيل لأول مرة */
+    .onboarding-screen {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-app);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px;
+      gap: 14px;
+    }
+    .gender-selector { display: flex; gap: 10px; }
+    .gender-option {
+      flex: 1; padding: 12px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 10px;
+      text-align: center; cursor: pointer; font-weight: bold;
+    }
+    .gender-option.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.15); }
   </style>
 </head>
 <body>
@@ -373,28 +417,18 @@
 
   <!-- 1. شاشة البداية / التسجيل لأول مرة -->
   <div class="onboarding-screen" id="onboardingScreen" style="display: none;">
-    <h2>مرحباً بك في المحادثة 👋</h2>
-    <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);margin-bottom:10px;">يرجى ملء بياناتك للبدء</p>
+    <h2 style="text-align:center;">مرحباً بك 👋</h2>
+    <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);">يرجى تحديد بياناتك للدخول</p>
 
-    <div class="form-group">
-      <label>الاسم:</label>
-      <input type="text" id="ob-name" class="form-input" placeholder="اسمك المستعار">
+    <input type="text" id="ob-name" class="form-input" placeholder="اسمك المستعار">
+    <input type="number" id="ob-age" class="form-input" placeholder="العمر">
+
+    <div class="gender-selector">
+      <div class="gender-option active" id="gender-male" onclick="setGender('male')">👦 ذكر</div>
+      <div class="gender-option" id="gender-female" onclick="setGender('female')">👧 أنثى</div>
     </div>
 
-    <div class="form-group">
-      <label>العمر:</label>
-      <input type="number" id="ob-age" class="form-input" placeholder="عمرك">
-    </div>
-
-    <div class="form-group">
-      <label>الجنس:</label>
-      <div class="gender-selector">
-        <div class="gender-option active" id="gender-male" onclick="setGender('male')">👦 ذكر</div>
-        <div class="gender-option" id="gender-female" onclick="setGender('female')">👧 أنثى</div>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="finishOnboarding()">دخول وبدء المحادثة</button>
+    <button class="btn-submit" onclick="finishOnboarding()">دخول</button>
   </div>
 
   <!-- 2. الشاشة الرئيسية: قائمة المحادثات -->
@@ -404,10 +438,13 @@
         <img id="my-avatar" class="avatar" src="" alt="avatar">
         <div>
           <div style="font-weight: bold; font-size: 0.95rem;"><span id="my-name">--</span> (<span id="my-age">--</span>)</div>
-          <div class="id-tag" onclick="copyMyId()" title="نسخ رقم الشات">رقمك: <span id="my-id-display">•••••••</span> 📋</div>
+          <div class="id-tag" onclick="copyInviteLink()" title="انقر لنسخ رابط الدعوة">رابط الدعوة 🔗</div>
         </div>
       </div>
-      <button class="round-btn" onclick="openAddModal()" title="إضافة شخص">➕</button>
+      <div class="header-icons">
+        <button class="round-btn" onclick="toggleTheme()" title="تغيير الثيم">🎨</button>
+        <button class="round-btn" onclick="openAddModal()" title="إضافة شخص">➕</button>
+      </div>
     </header>
 
     <div class="chat-list-container" id="chatList">
@@ -415,7 +452,7 @@
     </div>
   </div>
 
-  <!-- 3. شاشة المحادثة الفردية الخاصة -->
+  <!-- 3. شاشة المحادثة الفردية -->
   <div class="screen hidden-left" id="chatScreen">
     <div class="chat-screen-header">
       <button class="back-btn" onclick="goBackToHome()">⬅️</button>
@@ -430,15 +467,12 @@
       <button class="round-btn" style="border:none;background:transparent;color:var(--danger);" onclick="deleteEntireChat()" title="حذف الدردشة للطرفين">🗑️</button>
     </div>
 
-    <div class="chat-messages" id="messagesArea">
-      <!-- فقاعات الرسائل -->
-    </div>
+    <div class="chat-messages" id="messagesArea"></div>
 
-    <!-- صندوق الإرسال -->
     <div class="chat-bottom-bar">
-      <label class="round-btn" title="إرفاق صورة أو فيديو">
+      <label class="round-btn" title="إرفاق ملف">
         📎
-        <input type="file" id="media-input" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelect(event)">
+        <input type="file" id="media-input" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(event)">
       </label>
       <button class="round-btn" id="voice-record-btn" onclick="toggleVoiceRecording()" title="تسجيل صوتي">🎤</button>
       <input type="text" id="message-text-input" placeholder="اكتب رسالة..." onkeypress="if(event.key === 'Enter') sendTextMessage()">
@@ -449,12 +483,12 @@
   <!-- نافذة إضافة شخص -->
   <div class="modal-overlay" id="addModal">
     <div class="modal-box">
-      <h3 style="font-size:1rem;">إضافة محادثة جديدة</h3>
-      <input type="text" id="add-friend-name" class="form-input" placeholder="اسم الشخص">
+      <h3 style="font-size:1rem;">إضافة صديق برقم الشات</h3>
+      <input type="text" id="add-friend-name" class="form-input" placeholder="اسم الصديق">
       <input type="number" id="add-friend-id" class="form-input" placeholder="رقم الشات الخاص به">
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="round-btn" style="width:auto;padding:8px 16px;border-radius:8px;" onclick="closeModals()">إلغاء</button>
-        <button class="btn-submit" style="margin:0;padding:8px 16px;" onclick="addFriendAndOpen()">إضافة</button>
+        <button class="btn-submit" onclick="addFriendManual()">إضافة</button>
       </div>
     </div>
   </div>
@@ -462,11 +496,10 @@
 </div>
 
 <script>
-  // الصور الافتراضية للذكر والأنثى
   const BOY_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=b6e3f4';
   const GIRL_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=ffd5dc';
 
-  // 1. إدارة الهوية الثابتة
+  // 1. إدارة الهوية
   function getMyFixedId() {
     let id = localStorage.getItem('chat_fixed_device_id');
     if (!id || !/^\d{7}$/.test(id)) {
@@ -479,28 +512,43 @@
   const myId = getMyFixedId();
   let myProfile = JSON.parse(localStorage.getItem('chat_my_profile')) || null;
   let contacts = JSON.parse(localStorage.getItem('chat_contacts_list')) || [];
-  let chatHistory = JSON.parse(localStorage.getItem('chat_history_data')) || {}; // { [contactId]: [msgs] }
-  let offlineQueue = JSON.parse(localStorage.getItem('chat_offline_queue')) || {}; // رسائل معلقة لم تصل للطرف الآخر بعد
+  let chatHistory = JSON.parse(localStorage.getItem('chat_history_data')) || {};
+  let offlineQueue = JSON.parse(localStorage.getItem('chat_offline_queue')) || {};
 
   let activeChatId = null;
   let selectedGender = 'male';
   let peer = null;
-  let connections = {}; // دعم اتصالات متعددة
+  let connections = {};
 
-  // أدوات التسجيل الصوتي
+  // التسجيل الصوتي
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
 
-  // صوت إشعار نقي باستخدام Web Audio API (يعمل بدون ملفات خارجية)
+  // 2. إدارة الثيمات الـ 3 (dark -> emerald -> light)
+  const THEMES = ['dark', 'emerald', 'light'];
+  let currentTheme = localStorage.getItem('chat_theme') || 'dark';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('chat_theme', theme);
+  }
+
+  function toggleTheme() {
+    const nextIdx = (THEMES.indexOf(currentTheme) + 1) % THEMES.length;
+    currentTheme = THEMES[nextIdx];
+    applyTheme(currentTheme);
+  }
+
+  // 3. نغمة التنبيه الصوتية
   function playNotificationSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); // A5
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
       osc.connect(gain);
@@ -510,14 +558,39 @@
     } catch(e) {}
   }
 
-  // 2. التحقق من المستخدم الجديد لأول مرة
+  // 4. فحص روابط الدعوة السريعة (#invite=1234567)
+  function checkInviteLink() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#invite=')) {
+      const inviteId = hash.replace('#invite=', '').trim();
+      if (inviteId && inviteId !== myId) {
+        if (!contacts.some(c => c.id === inviteId)) {
+          contacts.push({ id: inviteId, name: 'صديق ' + inviteId, avatar: BOY_AVATAR });
+          saveContacts();
+          renderChatList();
+        }
+        setTimeout(() => openChat(inviteId), 300);
+      }
+      history.replaceState(null, null, ' ');
+    }
+  }
+
+  function copyInviteLink() {
+    const url = window.location.origin + window.location.pathname + '#invite=' + myId;
+    navigator.clipboard.writeText(url);
+    alert('تم نسخ رابط الدعوة الخاص بك!\nأي شخص يفتحه سينضاف لك تلقائياً:\n' + url);
+  }
+
+  // 5. بدء التسجيل والواجهة
   function checkOnboarding() {
+    applyTheme(currentTheme);
     if (!myProfile) {
       document.getElementById('onboardingScreen').style.display = 'flex';
     } else {
       loadProfileUI();
       renderChatList();
       initPeer();
+      checkInviteLink();
     }
   }
 
@@ -544,16 +617,16 @@
     loadProfileUI();
     renderChatList();
     initPeer();
+    checkInviteLink();
   }
 
   function loadProfileUI() {
-    document.getElementById('my-id-display').textContent = myId;
     document.getElementById('my-name').textContent = myProfile.name;
     document.getElementById('my-age').textContent = myProfile.age;
     document.getElementById('my-avatar').src = myProfile.avatar;
   }
 
-  // 3. الاتصال الحي P2P عبر PeerJS
+  // 6. الاتصال الحي P2P عبر PeerJS
   function initPeer() {
     peer = new Peer('chat-' + myId, { debug: 1 });
 
@@ -562,13 +635,8 @@
       connections[incomingId] = conn;
       setupConn(conn, incomingId);
 
-      // إضافة لجهات الاتصال إن لم يكن مضافاً
       if (!contacts.some(c => c.id === incomingId)) {
-        contacts.push({
-          id: incomingId,
-          name: 'صديق ' + incomingId,
-          avatar: BOY_AVATAR
-        });
+        contacts.push({ id: incomingId, name: 'صديق ' + incomingId, avatar: BOY_AVATAR });
         saveContacts();
         renderChatList();
       }
@@ -589,7 +657,6 @@
   function setupConn(conn, friendId) {
     conn.on('open', () => {
       updateOnlineStatus(friendId, true);
-      // إرسال أي رسائل كانت معلقة في وضع الأوفلاين
       flushOfflineQueue(friendId);
     });
 
@@ -610,20 +677,17 @@
     }
   }
 
-  // مزامنة الرسائل غير المستلمة
   function flushOfflineQueue(friendId) {
     if (offlineQueue[friendId] && offlineQueue[friendId].length > 0) {
-      offlineQueue[friendId].forEach(pkt => {
-        connections[friendId].send(pkt);
-      });
+      offlineQueue[friendId].forEach(pkt => connections[friendId].send(pkt));
       offlineQueue[friendId] = [];
       localStorage.setItem('chat_offline_queue', JSON.stringify(offlineQueue));
     }
   }
 
-  // 4. معالجة الرسائل المستلمة
+  // 7. معالجة البيانات والرسائل
   function handleIncomingData(friendId, data) {
-    playNotificationSound(); // تشغيل نغمة الإشعار
+    playNotificationSound();
 
     if (data.action === 'msg') {
       if (!chatHistory[friendId]) chatHistory[friendId] = [];
@@ -652,13 +716,11 @@
     }
   }
 
-  // 5. إرسال البيانات
   function sendPacket(targetId, packet) {
     const conn = connections[targetId];
     if (conn && conn.open) {
       conn.send(packet);
     } else {
-      // حفظ في كاش الرسائل المعلقة حتى يعود الطرف الثاني للاتصال
       if (!offlineQueue[targetId]) offlineQueue[targetId] = [];
       offlineQueue[targetId].push(packet);
       localStorage.setItem('chat_offline_queue', JSON.stringify(offlineQueue));
@@ -676,6 +738,7 @@
       type: 'text',
       content: text,
       time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+      loading: false,
       edited: false,
       deletedEveryone: false,
       deletedForMe: false
@@ -690,35 +753,48 @@
     input.value = '';
   }
 
-  function handleMediaSelect(e) {
+  // رفع الملف مع إظهار دائرة تحميل
+  function handleMediaUpload(e) {
     const file = e.target.files[0];
     e.target.value = '';
     if (!file || !activeChatId) return;
 
     const isVideo = file.type.startsWith('video');
+    const tempId = Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+
+    // 1. إضافة فقاعة تحميل مؤقتة داخل الشات
+    const tempMsg = {
+      id: tempId,
+      sender: myId,
+      type: isVideo ? 'video' : 'image',
+      content: '',
+      loading: true, // تفعيل دائرة التحميل
+      time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+      edited: false,
+      deletedEveryone: false,
+      deletedForMe: false
+    };
+
+    if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
+    chatHistory[activeChatId].push(tempMsg);
+    renderMessages();
+
+    // 2. قراءة الملف
     const reader = new FileReader();
     reader.onload = () => {
-      const msg = {
-        id: Date.now() + '-' + Math.random().toString(36).substr(2, 4),
-        sender: myId,
-        type: isVideo ? 'video' : 'image',
-        content: reader.result,
-        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-        edited: false,
-        deletedEveryone: false,
-        deletedForMe: false
-      };
-      if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
-      chatHistory[activeChatId].push(msg);
-      saveChatHistory();
-      renderMessages();
+      setTimeout(() => { // محاكاة سلاسة الإرسال
+        tempMsg.content = reader.result;
+        tempMsg.loading = false; // إنهاء التحميل
+        saveChatHistory();
+        renderMessages();
 
-      sendPacket(activeChatId, { action: 'msg', msg });
+        sendPacket(activeChatId, { action: 'msg', msg: tempMsg });
+      }, 600);
     };
     reader.readAsDataURL(file);
   }
 
-  // تسجيل الصوت
+  // تسجيل الصوت مع دائرة التحميل
   async function toggleVoiceRecording() {
     const btn = document.getElementById('voice-record-btn');
     if (!isRecording) {
@@ -728,25 +804,33 @@
         audioChunks = [];
         mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
         mediaRecorder.onstop = () => {
+          const tempId = Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+          const tempMsg = {
+            id: tempId,
+            sender: myId,
+            type: 'audio',
+            content: '',
+            loading: true,
+            time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+            edited: false,
+            deletedEveryone: false,
+            deletedForMe: false
+          };
+
+          chatHistory[activeChatId].push(tempMsg);
+          renderMessages();
+
           const blob = new Blob(audioChunks, { type: 'audio/webm' });
           const reader = new FileReader();
           reader.onload = () => {
-            const msg = {
-              id: Date.now() + '-' + Math.random().toString(36).substr(2, 4),
-              sender: myId,
-              type: 'audio',
-              content: reader.result,
-              time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-              edited: false,
-              deletedEveryone: false,
-              deletedForMe: false
-            };
-            if (!chatHistory[activeChatId]) chatHistory[activeChatId] = [];
-            chatHistory[activeChatId].push(msg);
-            saveChatHistory();
-            renderMessages();
+            setTimeout(() => {
+              tempMsg.content = reader.result;
+              tempMsg.loading = false;
+              saveChatHistory();
+              renderMessages();
 
-            sendPacket(activeChatId, { action: 'msg', msg });
+              sendPacket(activeChatId, { action: 'msg', msg: tempMsg });
+            }, 500);
           };
           reader.readAsDataURL(blob);
         };
@@ -754,7 +838,7 @@
         isRecording = true;
         btn.classList.add('recording');
       } catch(e) {
-        alert('تعذر فتح الميكروفون: ' + e.message);
+        alert('تعذر الوصول إلى الميكروفون: ' + e.message);
       }
     } else {
       mediaRecorder.stop();
@@ -763,7 +847,7 @@
     }
   }
 
-  // 6. التعديل والحذف
+  // 8. تعديل وحذف
   function editMsg(id) {
     const m = (chatHistory[activeChatId] || []).find(x => x.id === id);
     if (!m) return;
@@ -796,7 +880,7 @@
 
   function deleteEntireChat() {
     if (!activeChatId) return;
-    if (confirm('هل أنت متأكد من حذف هذه المحادثة بالكامل من كلا الطرفين؟')) {
+    if (confirm('حذف هذه المحادثة بالكامل من الطرفين؟')) {
       chatHistory[activeChatId] = [];
       saveChatHistory();
       renderMessages();
@@ -804,7 +888,7 @@
     }
   }
 
-  // 7. التنقل بين الشاشات
+  // 9. الواجهة والتنقل
   function openChat(contactId) {
     activeChatId = contactId;
     const contact = contacts.find(c => c.id === contactId);
@@ -812,12 +896,8 @@
     document.getElementById('chat-person-name').textContent = contact.name;
     document.getElementById('chat-person-avatar').src = contact.avatar || BOY_AVATAR;
 
-    // محاولة الاتصال به
     connectToFriend(contactId);
-
-    // تغيير الشاشة بتأثير الحركة
     document.getElementById('chatScreen').classList.remove('hidden-left');
-
     renderMessages();
   }
 
@@ -865,7 +945,15 @@
       box.className = `msg-box ${isMe ? 'me' : 'them'}`;
 
       let contentHtml = '';
-      if (m.deletedEveryone) {
+      if (m.loading) {
+        // دائرة التحميل أثناء الرفع
+        contentHtml = `
+          <div class="loader-box">
+            <div class="spinner"></div>
+            <span>جارِ الرفع والتحميل...</span>
+          </div>
+        `;
+      } else if (m.deletedEveryone) {
         contentHtml = '<span style="font-style:italic;opacity:0.7;">🚫 تم حذف هذه الرسالة</span>';
       } else if (m.type === 'text') {
         contentHtml = `<div>${m.content}</div>`;
@@ -880,7 +968,7 @@
       box.innerHTML = `
         <div class="msg-top-action">
           ${contentHtml}
-          ${!m.deletedEveryone ? `<button class="msg-actions-btn" onclick="toggleMsgMenu(event, '${m.id}')">⋮</button>` : ''}
+          ${!m.deletedEveryone && !m.loading ? `<button class="msg-actions-btn" onclick="toggleMsgMenu(event, '${m.id}')">⋮</button>` : ''}
         </div>
         <div class="msg-context-menu" id="ctx-${m.id}">
           ${isMe && m.type === 'text' && !m.deletedEveryone ? `<button onclick="editMsg('${m.id}')">✏️ تعديل</button>` : ''}
@@ -909,15 +997,14 @@
     document.querySelectorAll('.msg-context-menu').forEach(m => m.classList.remove('show'));
   });
 
-  // النوافذ والحفظ
   function openAddModal() { document.getElementById('addModal').classList.add('open'); }
   function closeModals() { document.getElementById('addModal').classList.remove('open'); }
 
-  function addFriendAndOpen() {
+  function addFriendManual() {
     const name = document.getElementById('add-friend-name').value.trim();
     const id = document.getElementById('add-friend-id').value.trim();
     if (!name || !id) return alert('يرجى ملء الحقول');
-    if (id === myId) return alert('لا يمكنك إضافة رقمك');
+    if (id === myId) return alert('لا يمكنك إضافة رقمك الشخصي');
 
     if (!contacts.some(c => c.id === id)) {
       contacts.push({ id, name, avatar: BOY_AVATAR });
@@ -930,11 +1017,6 @@
 
   function saveContacts() { localStorage.setItem('chat_contacts_list', JSON.stringify(contacts)); }
   function saveChatHistory() { localStorage.setItem('chat_history_data', JSON.stringify(chatHistory)); }
-
-  function copyMyId() {
-    navigator.clipboard.writeText(myId);
-    alert('تم نسخ رقم الشات: ' + myId);
-  }
 
   // تشغيل التطبيق
   checkOnboarding();
